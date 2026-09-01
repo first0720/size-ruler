@@ -226,3 +226,6 @@ a:focus-visible{outline:3px solid #0A5BD3;outline-offset:2px}
 tbody tr.hit th,tbody tr.hit td{background:var(--tape);font-weight:600;color:var(--ink)}
 tbody tr.hit th{box-shadow:inset 5px 0 0 var(--ink)}
 tbody tr.hit td,tbody tr.hit th{border-bottom:2px solid var(--ink);border-top:2px solid var(--ink)}
+/* ---- 본문 목록 ---- */
+main ul{margin:12px 0 0 1.1em;max-width:62ch}
+main ul li{font-size:15px;color:#33332C;margin-bottom:5px;padding-left:2px}
