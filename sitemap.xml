@@ -56,6 +56,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/ring-size/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/vans-old-skool/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
