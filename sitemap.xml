@@ -16,6 +16,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/adidas-handball-spezial/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/adidas-samba/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -31,7 +36,17 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/asics-gel-1130/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/asics-gel-kayano-14/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/asics-gel-nyc/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -91,6 +106,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/newbalance-1906r/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/newbalance-2002r/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -107,6 +127,11 @@
   </url>
   <url>
     <loc>https://sizeruler.com/newbalance-574/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/newbalance-9060/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -151,7 +176,22 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/nike-cortez/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/nike-dunk-low/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/nike-v2k-run/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/on-cloud-5/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -171,6 +211,11 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/reebok-club-c-85/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/ring-size/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -181,7 +226,17 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/timberland-6-inch/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/ugg-classic-mini/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/ugg-tasman/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -192,6 +247,11 @@
   </url>
   <url>
     <loc>https://sizeruler.com/vans-old-skool/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/vans-sk8-hi/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
