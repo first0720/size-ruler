@@ -294,6 +294,7 @@ def build(p):
 <footer class="wrap">
   <div>사이즈 자 — {p['name']}</div>
   <p class="disclaimer">근거: {srcs}. 의류 치수는 브랜드와 핏에 따라 편차가 크므로, 구매 전 상품 페이지의 실측 정보를 반드시 확인하시기 바랍니다.</p>
+  <p class="disclaimer"><a href="/privacy/">개인정보처리방침</a></p>
 </footer>
 
 </body>
