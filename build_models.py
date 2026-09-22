@@ -1589,7 +1589,7 @@ MODELS = [
         "sources": ["뉴발란스 공식 사이즈 차트", "KREAM 9060 상품 정보", "착용 후기 다수"],
         "faq": [
             ("뉴발란스 9060은 정사이즈인가요?",
-             "정사이즈입니다. 990·2002R을 신는 mm 그대로 고르세요. 발이 얇으면 반 다운도 괜찰습니다."),
+             "정사이즈입니다. 990·2002R을 신는 mm 그대로 고르세요. 발이 얇으면 반 다운도 괜찮습니다."),
             ("9060이 크게 나온다는데 반 다운해야 하나요?",
              "폭이 넓어 여유 있게 느껴지는 것입니다. 끈을 조여 발이 잡히면 정사이즈, 그래도 안에서 미끄러지면 반 다운하세요."),
             ("9060과 327 사이즈가 같나요?",
@@ -1758,6 +1758,18 @@ def num(n):
     return str(int(n)) if float(n) == int(n) else str(n)
 
 
+def eun_neun(word):
+    """단어 끝 글자의 받침을 보고 '은' 또는 '는'을 돌려준다. 숫자·영문도 읽는 소리로 판단."""
+    ch = word.strip()[-1]
+    if "가" <= ch <= "힣":
+        return "은" if (ord(ch) - 0xAC00) % 28 else "는"
+    if ch.isdigit():
+        return "는" if ch in "2459" else "은"   # 이·사·오·구 = 받침 없음
+    if ch.upper() in "LMNR":                    # 엘·엠·엔·알 = 받침 있음
+        return "은"
+    return "는"
+
+
 def build(m, others):
     # 정사이즈 모델은 '권장 mm'가 '내 발 길이'와 값이 같다.
     # 같은 숫자를 두 번 보여주면 표만 넓어지고 읽는 사람은 헷갈린다.
@@ -1777,7 +1789,7 @@ def build(m, others):
     head_cells += ('<th scope="col">US 남성</th><th scope="col">UK</th>'
                    '<th scope="col">EU</th>')
 
-    table_intro = (f"{m['name']}는 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. "
+    table_intro = (f"{m['name']}{eun_neun(m['name'])} 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. "
                    "아래는 발 길이에 해당하는 각국 사이즈입니다."
                    if same else
                    f"왼쪽이 실제 발 길이, 오른쪽이 {m['name']}에서 주문할 사이즈입니다.")
@@ -1949,7 +1961,7 @@ if __name__ == "__main__":
         # 같은 브랜드 형제 모델을 먼저 보여준다 (사용자가 실제로 헷갈리는 조합)
         siblings = [o for o in pool if o["name"].split()[0] == brand]
         rest = [o for o in pool if o["name"].split()[0] != brand]
-        others = (siblings + rest)[:3]
+        others = (siblings + rest)[:6]
         os.makedirs(m["slug"], exist_ok=True)
         path = os.path.join(m["slug"], "index.html")
         with open(path, "w", encoding="utf-8") as f:
