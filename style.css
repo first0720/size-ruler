@@ -229,3 +229,22 @@ tbody tr.hit td,tbody tr.hit th{border-bottom:2px solid var(--ink);border-top:2p
 /* ---- 본문 목록 ---- */
 main ul{margin:12px 0 0 1.1em;max-width:62ch}
 main ul li{font-size:15px;color:#33332C;margin-bottom:5px;padding-left:2px}
+/* ---- 반지 화면 재기 ---- */
+.card-box{
+  margin-top:14px;border:2px solid var(--ink);border-radius:8px;background:var(--card);
+  display:flex;align-items:center;justify-content:center;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);
+}
+.adjust{display:flex;align-items:center;gap:8px;margin-top:12px;max-width:420px}
+.adjust input[type=range]{flex:1;accent-color:var(--ink)}
+.adjust button{
+  flex:0 0 40px;height:40px;border:2px solid var(--ink);background:var(--card);
+  color:var(--ink);font-family:Oswald,sans-serif;font-size:20px;cursor:pointer;
+}
+.adjust button:focus-visible,.adjust input:focus-visible{outline:3px solid #0A5BD3;outline-offset:2px}
+.ring-stage{
+  display:flex;align-items:center;justify-content:center;min-height:200px;
+  margin-top:14px;background:var(--card);border:1px solid var(--rule);
+}
+.ring-disc{background:var(--tape);border-radius:50%}
+.ring-out{font-family:Oswald,sans-serif;font-size:22px;color:var(--ink)}
