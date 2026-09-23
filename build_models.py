@@ -1798,6 +1798,13 @@ def build(m, others):
         f'<div class="width-row"><dt>{w}</dt><dd>{t}</dd></div>\n      '
         for w, t in m["widths"])
 
+    width_note = ""
+    if m["slug"].startswith("newbalance-"):
+        width_note = (
+            '\n    <p class="width-guide-link">뉴발란스는 같은 길이에서도 폭을 고를 수 있습니다. '
+            '<a href="/newbalance-width/">D·2E·4E 발볼 가이드</a>에서 '
+            '내 발 너비에 맞는 폭을 mm로 확인하세요.</p>')
+
     body = "".join(
         f'<h3>{h}</h3>\n    <p>{p}</p>\n    ' for h, p in m["body"])
 
@@ -1918,7 +1925,7 @@ def build(m, others):
     <h2>발볼별 가이드</h2>
     <dl class="width-grid">
       {widths.rstrip()}
-    </dl>
+    </dl>{width_note}
   </section>
 
   <section>
