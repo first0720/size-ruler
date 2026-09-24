@@ -10,3 +10,12 @@
 
 /*.html
   Cache-Control: public, max-age=3600
+
+/*.md
+  X-Robots-Tag: noindex
+
+/*.py
+  X-Robots-Tag: noindex
+
+/*.sh
+  X-Robots-Tag: noindex
