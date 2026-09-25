@@ -6,6 +6,11 @@
     <priority>1.0</priority>
   </url>
   <url>
+    <loc>https://sizeruler.com/about/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://sizeruler.com/adidas-campus-00s/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
@@ -92,6 +97,11 @@
   </url>
   <url>
     <loc>https://sizeruler.com/dr-martens-1460/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/eu-size-chart/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -267,6 +277,11 @@
   </url>
   <url>
     <loc>https://sizeruler.com/ugg-tasman/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://sizeruler.com/us-size-chart/</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>

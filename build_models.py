@@ -2064,6 +2064,7 @@ def build(m, others):
     caption = (f"US·UK·EU는 권장 사이즈를 {chart_src}에 대조한 값입니다."
                if chart_src else
                "US·UK·EU는 일반 환산표 기준이며, 이 브랜드 공식표와는 0.5 정도 차이가 날 수 있습니다.")
+    caption += " US 여성은 남녀공용 상품 기준입니다. 여성 전용 상품은 브랜드 여성 사이즈표를 따로 확인하세요(같은 mm에서 0.5 정도 차이가 납니다)."
 
     table_intro = (f"{m['name']}{eun_neun(m['name'])} 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. "
                    "아래는 발 길이에 해당하는 각국 사이즈입니다."
@@ -2227,7 +2228,7 @@ def build(m, others):
 <footer class="wrap">
   <div>사이즈 자 — {m['name']} 사이즈 가이드</div>
   <p class="disclaimer">근거: {srcs}. 착용 경향은 모델과 생산 시기에 따라 달라질 수 있으며, 개인의 발 모양에 따라 결과가 다를 수 있습니다. 고가 제품은 매장에서 신어보고 구매하시기를 권합니다.</p>
-  <p class="disclaimer"><a href="/privacy/">개인정보처리방침</a></p>
+  <p class="disclaimer"><a href="/about/">사이트 소개</a> · <a href="/privacy/">개인정보처리방침</a></p>
 </footer>
 
 {finder_js}

@@ -10,13 +10,15 @@ import ast, os, subprocess, sys
 ROOT = os.path.dirname(os.path.abspath(__file__))
 ADS = ('<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js'
        '?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>')
-PRIV = '<p class="disclaimer"><a href="/privacy/">개인정보처리방침</a></p>'
+PRIV = '<p class="disclaimer"><a href="/about/">사이트 소개</a> · <a href="/privacy/">개인정보처리방침</a></p>'
 EXTRA = [
     ("/kids-shoe-size/", "아동 신발 사이즈", "발 길이 + 10mm"),
     ("/kids-clothing-size/", "아동 의류 사이즈", "숫자 = 아이 키(cm)"),
     ("/ring-size/", "반지 호수", "둘레 − 43 = 호수"),
     ("/clothing-size-men/", "남성 의류 사이즈", "95·100·105와 S/M/L 환산"),
     ("/clothing-size-women/", "여성 의류 사이즈", "44·55·66 알아보기"),
+    ("/us-size-chart/", "미국 신발 사이즈표", "브랜드별 US 비교"),
+    ("/eu-size-chart/", "유럽 신발 사이즈표", "브랜드별 EU 비교"),
 ]
 
 
