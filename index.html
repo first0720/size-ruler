@@ -6,6 +6,7 @@
 <title>신발 사이즈 환산표 — mm · US · UK · EU · JP와 브랜드별 실측 차이</title>
 <meta name="description" content="230mm부터 300mm까지 US·UK·EU·JP 신발 사이즈 환산표. 나이키, 아디다스, 뉴발란스 등 브랜드별로 실제 몇 mm를 신어야 하는지 정리했습니다.">
 <link rel="canonical" href="https://sizeruler.com/">
+<meta name="naver-site-verification" content="f9684b94fc402e1b1e45b3b47dbf88a445f755d3" />
 <meta property="og:title" content="신발 사이즈 환산표 — mm · US · UK · EU · JP">
 <meta property="og:description" content="브랜드별 실측 차이까지 반영한 신발 사이즈 환산표.">
 <meta property="og:type" content="website">
@@ -19,7 +20,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -39,9 +40,38 @@
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type":"Question","name":"270mm은 US 사이즈로 몇인가요?","acceptedAnswer":{"@type":"Answer","text":"남성 기준 US 9, UK 8, EU 42.5입니다. 여성 US 사이즈로는 10.5에 해당합니다."}},
-    {"@type":"Question","name":"나이키와 아디다스 사이즈가 다른가요?","acceptedAnswer":{"@type":"Answer","text":"같은 표기 사이즈라도 아디다스가 더 좁고 짧게 나오는 편입니다. 평소 270mm를 신는다면 아디다스는 275mm를 권합니다."}},
-    {"@type":"Question","name":"발 길이는 어떻게 재나요?","acceptedAnswer":{"@type":"Answer","text":"벽에 발뒤꿈치를 붙이고 서서 가장 긴 발가락 끝까지의 길이를 mm로 잽니다. 저녁에 재는 것이 정확합니다."}}
+    {
+      "@type": "Question",
+      "name": "270mm은 US 사이즈로 몇인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "남성 US 9, 여성 US 10.5, UK 8, EU 42.5입니다. 다만 이건 표준 환산값이고, 브랜드에 따라 반 사이즈씩 차이가 납니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "온라인에서 해외 직구할 때 어느 값을 봐야 하나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "US 사이즈가 표기돼 있어도 판매 페이지에 안창 길이(insole length)가 mm로 적혀 있으면 그쪽이 훨씬 정확합니다. 표기 사이즈는 브랜드 마케팅에 가깝고, 안창 길이는 실측값입니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "여성 사이즈와 남성 사이즈 차이는 뭔가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "같은 길이에서 US 여성 사이즈는 남성보다 나이키·뉴발란스·반스는 1.5, 아디다스는 1, 컨버스는 2 큽니다. 나이키 남성 US 9는 여성 US 10.5입니다. 단, 여성용 라스트는 발뒤꿈치가 더 좁게 설계되는 경우가 많아 길이만 맞춘다고 다 맞지는 않습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "EU 사이즈가 사이트마다 다른데요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "EU 사이즈는 국제 표준이 아니라 프랑스식 파리 포인트(1 포인트 = 6.67mm)에서 온 관습이라, 브랜드마다 반올림 방식이 다릅니다. 0.5 정도 차이는 정상입니다."
+      }
+    }
   ]
 }
 </script>
@@ -144,7 +174,7 @@
         <div>
           <div class="brand-name"><a href="/converse-chuck-taylor/">컨버스 척테일러 클래식</a></div>
           <div class="brand-note">칼발은 정사이즈, 발볼이 있으면 반~한 사이즈 업. 길이가 길어 보이는 신발이라 크게 신으면 실루엣이 부담스러워질 수 있습니다.
-            <span class="src">근거: 컨버스 코리아 구매 후기 · 커뮤니티 다수 의견</span></div>
+            <span class="src">근거: 컨버스 공식 사이즈 차트 · 구매 후기 · 커뮤니티 다수 의견</span></div>
         </div>
         <div class="brand-pick">270</div>
       </div>
@@ -171,7 +201,7 @@
         <div>
           <div class="brand-name"><a href="/vans-old-skool/">반스 올드스쿨</a></div>
           <div class="brand-note">정사이즈. 끈을 꽉 매는 착용법을 원하면 반 사이즈 업, 컴피쿠시 라인은 한 사이즈 업 의견이 많습니다.
-            <span class="src">근거: 커뮤니티 다수 의견</span></div>
+            <span class="src">근거: 반스 공식 사이즈 차트 · 커뮤니티 다수 의견</span></div>
         </div>
         <div class="brand-pick">270</div>
       </div>
@@ -557,7 +587,7 @@
 
   <section id="table">
     <h2>전체 환산표</h2>
-    <p>발 길이 230mm부터 300mm까지, 5mm 단위 전체 표입니다. 남성 기준이며 여성 US 사이즈는 남성보다 1.5 큽니다.</p>
+    <p>발 길이 230mm부터 300mm까지, 5mm 단위 전체 표입니다. 남성 기준입니다. 여성 US 사이즈는 브랜드에 따라 남성보다 1~2 큽니다(나이키·뉴발란스·반스 1.5, 아디다스 1, 컨버스 2).</p>
     <div class="scroller">
       <table>
         <caption>단위: mm는 발 길이 기준. EU 사이즈는 브랜드에 따라 0.5 차이가 날 수 있습니다.</caption>
@@ -606,7 +636,7 @@
     </details>
     <details>
       <summary>여성 사이즈와 남성 사이즈 차이는 뭔가요?</summary>
-      <p>길이 기준으로 US 여성 사이즈는 남성보다 1.5 큽니다. 남성 US 9 = 여성 US 10.5입니다. 단, 여성용 라스트는 발뒤꿈치가 더 좁게 설계되는 경우가 많아 길이만 맞춘다고 다 맞지는 않습니다.</p>
+      <p>같은 길이에서 US 여성 사이즈는 남성보다 나이키·뉴발란스·반스는 1.5, 아디다스는 1, 컨버스는 2 큽니다. 나이키 남성 US 9는 여성 US 10.5입니다. 단, 여성용 라스트는 발뒤꿈치가 더 좁게 설계되는 경우가 많아 길이만 맞춘다고 다 맞지는 않습니다.</p>
     </details>
     <details>
       <summary>EU 사이즈가 사이트마다 다른데요?</summary>

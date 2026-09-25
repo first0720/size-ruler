@@ -6,7 +6,7 @@
 """
 import json, os, html
 
-SIZES = [235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290]
+SIZES = [225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290]
 
 MODELS = [
     {
@@ -1967,17 +1967,61 @@ FINDER_JS = """<script>
 </script>"""
 
 
-MAP = {225:(4.5,3.5,36.5),230:(5,4,37),235:(5.5,4.5,37.5),240:(6,5,38.5),245:(6.5,5.5,39),250:(7,6,40),
-       255:(7.5,6.5,40.5),260:(8,7,41),265:(8.5,7.5,42),270:(9,8,42.5),
-       275:(9.5,8.5,43),280:(10,9,44),285:(10.5,9.5,44.5),290:(11,10,45),
-       295:(11.5,10.5,45.5),300:(12,11,46)}
+# KR 표기(mm) -> (US 남성, US 여성, UK, EU). 브랜드마다 다르므로 공식 사이즈표를 그대로 옮긴다.
+# 한 mm에 두 줄이 있는 곳(나이키 235·240 등)은 공식표 그대로 둘 다 적는다.
+
+# 일반 환산표: 공식표를 대조하지 않은 브랜드에 쓴다. 여성 = 남성 + 1.5.
+MAP = {225:(4.5,6,3.5,36.5),230:(5,6.5,4,37),235:(5.5,7,4.5,37.5),240:(6,7.5,5,38.5),245:(6.5,8,5.5,39),
+       250:(7,8.5,6,40),255:(7.5,9,6.5,40.5),260:(8,9.5,7,41),265:(8.5,10,7.5,42),270:(9,10.5,8,42.5),
+       275:(9.5,11,8.5,43),280:(10,11.5,9,44),285:(10.5,12,9.5,44.5),290:(11,12.5,10,45),
+       295:(11.5,13,10.5,45.5),300:(12,13.5,11,46)}
+
+# 나이키 코리아 남성 신발 사이즈 차트(nike.com/kr/size-fit/mens-footwear)의 KR(mm) 줄.
+NIKE_MAP = {225:(3.5,5,3,35.5),230:(4,5.5,3.5,36),235:("4.5·5","6·6.5","4·4.5","36.5·37.5"),
+            240:("5.5·6","7·7.5","5·5.5","38·38.5"),245:(6.5,8,6,39),250:(7,8.5,6,40),255:(7.5,9,6.5,40.5),
+            260:(8,9.5,7,41),265:(8.5,10,7.5,42),270:(9,10.5,8,42.5),275:(9.5,11,8.5,43),280:(10,11.5,9,44),
+            285:(10.5,12,9.5,44.5),290:(11,12.5,10,45),295:(11.5,13,10.5,45.5),300:(12,13.5,11,46),
+            305:(12.5,14,11.5,47),310:(13,14.5,12,47.5)}
+
+# 아디다스 공식 남성 신발 사이즈 차트(adidas.com)의 JP(mm) 줄. 여성 = 남성 + 1, UK = 남성 - 0.5.
+ADIDAS_MAP = {220:(4,5,3.5,36),225:(4.5,5.5,4,"36⅔"),230:(5,6,4.5,"37⅓"),235:(5.5,6.5,5,38),
+              240:(6,7,5.5,"38⅔"),245:(6.5,7.5,6,"39⅓"),250:(7,8,6.5,40),255:(7.5,8.5,7,"40⅔"),
+              260:(8,9,7.5,"41⅓"),265:(8.5,9.5,8,42),270:(9,10,8.5,"42⅔"),275:(9.5,10.5,9,"43⅓"),
+              280:(10,11,9.5,44),285:(10.5,11.5,10,"44⅔"),290:(11,12,10.5,"45⅓"),295:(11.5,12.5,11,46),
+              300:(12,13,11.5,"46⅔")}
+
+# 뉴발란스 공식 사이즈 가이드(newbalance.com) 남성 표의 Length(cm) 줄.
+NB_MAP = {220:(4,5.5,3.5,36),225:(4.5,6,4,37),230:(5,6.5,4.5,37.5),235:(5.5,7,5,38),240:(6,7.5,5.5,38.5),
+          245:(6.5,8,6,39.5),250:(7,8.5,6.5,40),255:(7.5,9,7,40.5),260:(8,9.5,7.5,41.5),265:(8.5,10,8,42),
+          270:(9,10.5,8.5,42.5),275:(9.5,11,9,43),280:(10,11.5,9.5,44),285:(10.5,12,10,44.5),
+          290:(11,12.5,10.5,45),295:(11.5,13,11,45.5),300:(12,13.5,11.5,46.5)}
+
+# 반스 공식 사이즈 차트(vans.com)의 JP 줄. 남성은 245(US 6.5)부터, 여성은 280(US 11.5)까지만 있다.
+VANS_MAP = {220:("—",5.5,3,35),225:("—",6,3.5,36),230:("—",6.5,4,36.5),235:("—",7,4.5,37),240:("—",7.5,5,38),
+            245:(6.5,8,5.5,38.5),250:(7,8.5,6,39),255:(7.5,9,6.5,40),260:(8,9.5,7,40.5),265:(8.5,10,7.5,41),
+            270:(9,10.5,8,42),275:(9.5,11,8.5,42.5),280:(10,11.5,9,43),285:(10.5,"—",9.5,44),
+            290:(11,"—",10,44.5),295:(11.5,"—",10.5,45),300:(12,"—",11,46)}
+
+# 컨버스 공식 차트(converse.com, 척테일러·척 70). US 숫자가 다른 브랜드보다 반 칸 크다 (US 남 9 = 27.5cm).
+# UK는 US 남성과 같은 숫자, 여성 = 남성 + 2. 차트에 24.5cm가 US 5.5와 6 두 줄로 나와 있어 둘 다 표기한다.
+CONVERSE_MAP = {220:(3,5,3,35),225:(3.5,5.5,3.5,36),230:(4,6,4,36.5),235:(4.5,6.5,4.5,37),240:(5,7,5,37.5),
+                245:("5.5·6","7.5·8","5.5·6","38·39"),250:(6.5,8.5,6.5,39.5),255:(7,9,7,40),260:(7.5,9.5,7.5,41),
+                265:(8,10,8,41.5),270:(8.5,10.5,8.5,42),275:(9,11,9,42.5),280:(9.5,11.5,9.5,43),
+                285:(10,12,10,44),290:(10.5,12.5,10.5,44.5),295:(11,13,11,45),300:(11.5,13.5,11.5,46)}
+
+BRAND_CHARTS = {
+    "나이키": (NIKE_MAP, "나이키 공식 사이즈표"),
+    "아디다스": (ADIDAS_MAP, "아디다스 공식 사이즈표"),
+    "뉴발란스": (NB_MAP, "뉴발란스 공식 사이즈표"),
+    "반스": (VANS_MAP, "반스 공식 사이즈표"),
+}
 
 
-# 컨버스 공식 차트(converse.com, 척테일러·척 70). US 숫자가 MAP보다 반 칸 크다 (US 남 9 = 27.5cm).
-# UK는 US 남성과 같은 숫자. 차트에 24.5cm가 US 5.5와 6 두 줄로 나와 있어 둘 다 표기한다.
-CONVERSE_MAP = {235:(4.5,4.5,37),240:(5,5,37.5),245:("5.5·6","5.5·6","38·39"),250:(6.5,6.5,39.5),
-                255:(7,7,40),260:(7.5,7.5,41),265:(8,8,41.5),270:(8.5,8.5,42),275:(9,9,42.5),
-                280:(9.5,9.5,43),285:(10,10,44),290:(10.5,10.5,44.5),295:(11,11,45),300:(11.5,11.5,46)}
+def chart_for(m):
+    """모델에 맞는 (환산표, 출처 문구). 공식표를 대조하지 않은 브랜드는 일반 환산표."""
+    if m.get("converse_chart"):
+        return CONVERSE_MAP, "컨버스 공식 사이즈표"
+    return BRAND_CHARTS.get(m["name"].split()[0], (MAP, None))
 
 
 def num(n):
@@ -2003,19 +2047,23 @@ def build(m, others):
     # 같은 숫자를 두 번 보여주면 표만 넓어지고 읽는 사람은 헷갈린다.
     same = (m["offset"] == 0)
 
+    chart, chart_src = chart_for(m)
     rows = ""
     for mm in SIZES:
         rec = mm + m["offset"]
-        us, uk, eu = (CONVERSE_MAP if m.get("converse_chart") else MAP).get(rec, ("—", "—", "—"))
+        us, usw, uk, eu = chart.get(rec, ("—", "—", "—", "—"))
         pick = "" if same else f'<td class="rec">{rec}</td>'
         rows += (f'<tr data-mm="{mm}"><th scope="row">{mm}</th>{pick}'
-                 f'<td>{num(us)}</td><td>{num(uk)}</td><td>{num(eu)}</td></tr>\n          ')
+                 f'<td>{num(us)}</td><td>{num(usw)}</td><td>{num(uk)}</td><td>{num(eu)}</td></tr>\n          ')
 
     head_cells = '<th scope="col">내 발 길이</th>'
     if not same:
         head_cells += '<th scope="col">권장 mm</th>'
-    head_cells += ('<th scope="col">US 남성</th><th scope="col">UK</th>'
-                   '<th scope="col">EU</th>')
+    head_cells += ('<th scope="col">US 남성</th><th scope="col">US 여성</th>'
+                   '<th scope="col">UK</th><th scope="col">EU</th>')
+    caption = (f"US·UK·EU는 권장 사이즈를 {chart_src}에 대조한 값입니다."
+               if chart_src else
+               "US·UK·EU는 일반 환산표 기준이며, 이 브랜드 공식표와는 0.5 정도 차이가 날 수 있습니다.")
 
     table_intro = (f"{m['name']}{eun_neun(m['name'])} 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. "
                    "아래는 발 길이에 해당하는 각국 사이즈입니다."
@@ -2088,7 +2136,7 @@ def build(m, others):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
@@ -2131,14 +2179,14 @@ def build(m, others):
     <p>{table_intro}</p>
     <div class="entry">
       <label for="mmFind">내 발 길이</label>
-      <input id="mmFind" type="number" inputmode="numeric" min="235" max="290" step="5"
+      <input id="mmFind" type="number" inputmode="numeric" min="225" max="290" step="5"
              placeholder="270" aria-describedby="mmFindHint">
       <span class="hint" id="mmFindHint">입력하면 해당 줄을 표시합니다</span>
       <span class="warn" id="mmFindWarn" hidden>표 범위를 벗어났습니다</span>
     </div>
     <div class="scroller">
       <table class="pick-table">
-        <caption>US·UK·EU는 권장 사이즈에 해당하는 값입니다. 표기는 브랜드에 따라 0.5 차이가 날 수 있습니다.</caption>
+        <caption>{caption}</caption>
         <thead>
           <tr>{head_cells}</tr>
         </thead>
@@ -2192,11 +2240,14 @@ def build(m, others):
 if __name__ == "__main__":
     for m in MODELS:
         brand = m["name"].split()[0]
-        pool = [o for o in MODELS if o["slug"] != m["slug"]]
+        # 목록 순서대로 고르면 앞쪽 모델만 링크를 받는다. 자기 다음 모델부터 돌아가며 고른다.
+        i = MODELS.index(m)
+        pool = MODELS[i + 1:] + MODELS[:i]
         # 같은 브랜드 형제 모델을 먼저 보여준다 (사용자가 실제로 헷갈리는 조합)
         siblings = [o for o in pool if o["name"].split()[0] == brand]
         rest = [o for o in pool if o["name"].split()[0] != brand]
-        others = (siblings + rest)[:6]
+        # 형제 모델은 3개까지만: 모델이 많은 브랜드가 6칸을 다 채우면 다른 브랜드 모델이 링크를 못 받는다.
+        others = siblings[:3] + rest[:6 - len(siblings[:3])]
         os.makedirs(m["slug"], exist_ok=True)
         path = os.path.join(m["slug"], "index.html")
         with open(path, "w", encoding="utf-8") as f:

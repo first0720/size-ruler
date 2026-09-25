@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
@@ -108,30 +108,32 @@
     <p>왼쪽이 실제 발 길이, 오른쪽이 나이키 V2K 런에서 주문할 사이즈입니다.</p>
     <div class="entry">
       <label for="mmFind">내 발 길이</label>
-      <input id="mmFind" type="number" inputmode="numeric" min="235" max="290" step="5"
+      <input id="mmFind" type="number" inputmode="numeric" min="225" max="290" step="5"
              placeholder="270" aria-describedby="mmFindHint">
       <span class="hint" id="mmFindHint">입력하면 해당 줄을 표시합니다</span>
       <span class="warn" id="mmFindWarn" hidden>표 범위를 벗어났습니다</span>
     </div>
     <div class="scroller">
       <table class="pick-table">
-        <caption>US·UK·EU는 권장 사이즈에 해당하는 값입니다. 표기는 브랜드에 따라 0.5 차이가 날 수 있습니다.</caption>
+        <caption>US·UK·EU는 권장 사이즈를 나이키 공식 사이즈표에 대조한 값입니다.</caption>
         <thead>
-          <tr><th scope="col">내 발 길이</th><th scope="col">권장 mm</th><th scope="col">US 남성</th><th scope="col">UK</th><th scope="col">EU</th></tr>
+          <tr><th scope="col">내 발 길이</th><th scope="col">권장 mm</th><th scope="col">US 남성</th><th scope="col">US 여성</th><th scope="col">UK</th><th scope="col">EU</th></tr>
         </thead>
         <tbody>
-          <tr data-mm="235"><th scope="row">235</th><td class="rec">230</td><td>5</td><td>4</td><td>37</td></tr>
-          <tr data-mm="240"><th scope="row">240</th><td class="rec">235</td><td>5.5</td><td>4.5</td><td>37.5</td></tr>
-          <tr data-mm="245"><th scope="row">245</th><td class="rec">240</td><td>6</td><td>5</td><td>38.5</td></tr>
-          <tr data-mm="250"><th scope="row">250</th><td class="rec">245</td><td>6.5</td><td>5.5</td><td>39</td></tr>
-          <tr data-mm="255"><th scope="row">255</th><td class="rec">250</td><td>7</td><td>6</td><td>40</td></tr>
-          <tr data-mm="260"><th scope="row">260</th><td class="rec">255</td><td>7.5</td><td>6.5</td><td>40.5</td></tr>
-          <tr data-mm="265"><th scope="row">265</th><td class="rec">260</td><td>8</td><td>7</td><td>41</td></tr>
-          <tr data-mm="270"><th scope="row">270</th><td class="rec">265</td><td>8.5</td><td>7.5</td><td>42</td></tr>
-          <tr data-mm="275"><th scope="row">275</th><td class="rec">270</td><td>9</td><td>8</td><td>42.5</td></tr>
-          <tr data-mm="280"><th scope="row">280</th><td class="rec">275</td><td>9.5</td><td>8.5</td><td>43</td></tr>
-          <tr data-mm="285"><th scope="row">285</th><td class="rec">280</td><td>10</td><td>9</td><td>44</td></tr>
-          <tr data-mm="290"><th scope="row">290</th><td class="rec">285</td><td>10.5</td><td>9.5</td><td>44.5</td></tr>
+          <tr data-mm="225"><th scope="row">225</th><td class="rec">220</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+          <tr data-mm="230"><th scope="row">230</th><td class="rec">225</td><td>3.5</td><td>5</td><td>3</td><td>35.5</td></tr>
+          <tr data-mm="235"><th scope="row">235</th><td class="rec">230</td><td>4</td><td>5.5</td><td>3.5</td><td>36</td></tr>
+          <tr data-mm="240"><th scope="row">240</th><td class="rec">235</td><td>4.5·5</td><td>6·6.5</td><td>4·4.5</td><td>36.5·37.5</td></tr>
+          <tr data-mm="245"><th scope="row">245</th><td class="rec">240</td><td>5.5·6</td><td>7·7.5</td><td>5·5.5</td><td>38·38.5</td></tr>
+          <tr data-mm="250"><th scope="row">250</th><td class="rec">245</td><td>6.5</td><td>8</td><td>6</td><td>39</td></tr>
+          <tr data-mm="255"><th scope="row">255</th><td class="rec">250</td><td>7</td><td>8.5</td><td>6</td><td>40</td></tr>
+          <tr data-mm="260"><th scope="row">260</th><td class="rec">255</td><td>7.5</td><td>9</td><td>6.5</td><td>40.5</td></tr>
+          <tr data-mm="265"><th scope="row">265</th><td class="rec">260</td><td>8</td><td>9.5</td><td>7</td><td>41</td></tr>
+          <tr data-mm="270"><th scope="row">270</th><td class="rec">265</td><td>8.5</td><td>10</td><td>7.5</td><td>42</td></tr>
+          <tr data-mm="275"><th scope="row">275</th><td class="rec">270</td><td>9</td><td>10.5</td><td>8</td><td>42.5</td></tr>
+          <tr data-mm="280"><th scope="row">280</th><td class="rec">275</td><td>9.5</td><td>11</td><td>8.5</td><td>43</td></tr>
+          <tr data-mm="285"><th scope="row">285</th><td class="rec">280</td><td>10</td><td>11.5</td><td>9</td><td>44</td></tr>
+          <tr data-mm="290"><th scope="row">290</th><td class="rec">285</td><td>10.5</td><td>12</td><td>9.5</td><td>44.5</td></tr>
         </tbody>
       </table>
     </div>
@@ -175,12 +177,12 @@
   <section>
     <h2>다른 모델</h2>
     <div class="related">
+      <a href="/nike-zoom-vomero-5/">나이키 줌 보메로 5 사이즈<span>정사이즈</span></a>
       <a href="/nike-air-force-1/">나이키 에어포스 1 사이즈<span>로우는 정사이즈, 미드·하이는 반 사이즈 업</span></a>
       <a href="/nike-dunk-low/">나이키 덩크 로우 사이즈<span>정사이즈</span></a>
-      <a href="/nike-air-jordan-1/">나이키 에어 조던 1 사이즈<span>정사이즈</span></a>
-      <a href="/nike-air-max-97/">나이키 에어맥스 97 사이즈<span>반 사이즈(5mm) 업</span></a>
-      <a href="/nike-air-max-90/">나이키 에어맥스 90 사이즈<span>정사이즈</span></a>
-      <a href="/nike-air-max-95/">나이키 에어맥스 95 사이즈<span>반 사이즈(5mm) 업</span></a>
+      <a href="/asics-gel-1130/">아식스 젤-1130 사이즈<span>정사이즈</span></a>
+      <a href="/adidas-handball-spezial/">아디다스 핸드볼 스페지알 사이즈<span>반 사이즈(5mm) 업</span></a>
+      <a href="/timberland-6-inch/">팀버랜드 6인치 프리미엄 부츠 사이즈<span>반 사이즈(5mm) 다운</span></a>
       <a href="/">전체 신발 사이즈 환산표<span>mm · US · UK · EU · JP</span></a>
     </div>
   </section>

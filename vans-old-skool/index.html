@@ -19,7 +19,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="/style.css">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
@@ -108,30 +108,32 @@
     <p>반스 올드스쿨은 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. 아래는 발 길이에 해당하는 각국 사이즈입니다.</p>
     <div class="entry">
       <label for="mmFind">내 발 길이</label>
-      <input id="mmFind" type="number" inputmode="numeric" min="235" max="290" step="5"
+      <input id="mmFind" type="number" inputmode="numeric" min="225" max="290" step="5"
              placeholder="270" aria-describedby="mmFindHint">
       <span class="hint" id="mmFindHint">입력하면 해당 줄을 표시합니다</span>
       <span class="warn" id="mmFindWarn" hidden>표 범위를 벗어났습니다</span>
     </div>
     <div class="scroller">
       <table class="pick-table">
-        <caption>US·UK·EU는 권장 사이즈에 해당하는 값입니다. 표기는 브랜드에 따라 0.5 차이가 날 수 있습니다.</caption>
+        <caption>US·UK·EU는 권장 사이즈를 반스 공식 사이즈표에 대조한 값입니다.</caption>
         <thead>
-          <tr><th scope="col">내 발 길이</th><th scope="col">US 남성</th><th scope="col">UK</th><th scope="col">EU</th></tr>
+          <tr><th scope="col">내 발 길이</th><th scope="col">US 남성</th><th scope="col">US 여성</th><th scope="col">UK</th><th scope="col">EU</th></tr>
         </thead>
         <tbody>
-          <tr data-mm="235"><th scope="row">235</th><td>5.5</td><td>4.5</td><td>37.5</td></tr>
-          <tr data-mm="240"><th scope="row">240</th><td>6</td><td>5</td><td>38.5</td></tr>
-          <tr data-mm="245"><th scope="row">245</th><td>6.5</td><td>5.5</td><td>39</td></tr>
-          <tr data-mm="250"><th scope="row">250</th><td>7</td><td>6</td><td>40</td></tr>
-          <tr data-mm="255"><th scope="row">255</th><td>7.5</td><td>6.5</td><td>40.5</td></tr>
-          <tr data-mm="260"><th scope="row">260</th><td>8</td><td>7</td><td>41</td></tr>
-          <tr data-mm="265"><th scope="row">265</th><td>8.5</td><td>7.5</td><td>42</td></tr>
-          <tr data-mm="270"><th scope="row">270</th><td>9</td><td>8</td><td>42.5</td></tr>
-          <tr data-mm="275"><th scope="row">275</th><td>9.5</td><td>8.5</td><td>43</td></tr>
-          <tr data-mm="280"><th scope="row">280</th><td>10</td><td>9</td><td>44</td></tr>
-          <tr data-mm="285"><th scope="row">285</th><td>10.5</td><td>9.5</td><td>44.5</td></tr>
-          <tr data-mm="290"><th scope="row">290</th><td>11</td><td>10</td><td>45</td></tr>
+          <tr data-mm="225"><th scope="row">225</th><td>—</td><td>6</td><td>3.5</td><td>36</td></tr>
+          <tr data-mm="230"><th scope="row">230</th><td>—</td><td>6.5</td><td>4</td><td>36.5</td></tr>
+          <tr data-mm="235"><th scope="row">235</th><td>—</td><td>7</td><td>4.5</td><td>37</td></tr>
+          <tr data-mm="240"><th scope="row">240</th><td>—</td><td>7.5</td><td>5</td><td>38</td></tr>
+          <tr data-mm="245"><th scope="row">245</th><td>6.5</td><td>8</td><td>5.5</td><td>38.5</td></tr>
+          <tr data-mm="250"><th scope="row">250</th><td>7</td><td>8.5</td><td>6</td><td>39</td></tr>
+          <tr data-mm="255"><th scope="row">255</th><td>7.5</td><td>9</td><td>6.5</td><td>40</td></tr>
+          <tr data-mm="260"><th scope="row">260</th><td>8</td><td>9.5</td><td>7</td><td>40.5</td></tr>
+          <tr data-mm="265"><th scope="row">265</th><td>8.5</td><td>10</td><td>7.5</td><td>41</td></tr>
+          <tr data-mm="270"><th scope="row">270</th><td>9</td><td>10.5</td><td>8</td><td>42</td></tr>
+          <tr data-mm="275"><th scope="row">275</th><td>9.5</td><td>11</td><td>8.5</td><td>42.5</td></tr>
+          <tr data-mm="280"><th scope="row">280</th><td>10</td><td>11.5</td><td>9</td><td>43</td></tr>
+          <tr data-mm="285"><th scope="row">285</th><td>10.5</td><td>—</td><td>9.5</td><td>44</td></tr>
+          <tr data-mm="290"><th scope="row">290</th><td>11</td><td>—</td><td>10</td><td>44.5</td></tr>
         </tbody>
       </table>
     </div>
@@ -179,10 +181,10 @@
     <div class="related">
       <a href="/vans-authentic/">반스 어센틱 사이즈<span>정사이즈</span></a>
       <a href="/vans-sk8-hi/">반스 스케이트하이 사이즈<span>정사이즈</span></a>
-      <a href="/adidas-samba/">아디다스 삼바 사이즈<span>보통 발볼이면 정사이즈</span></a>
-      <a href="/adidas-gazelle/">아디다스 가젤 사이즈<span>대부분 반 사이즈 업</span></a>
-      <a href="/nike-air-force-1/">나이키 에어포스 1 사이즈<span>로우는 정사이즈, 미드·하이는 반 사이즈 업</span></a>
-      <a href="/converse-chuck-70/">컨버스 척 70 사이즈<span>발 길이 그대로 (발볼 넓으면 반업)</span></a>
+      <a href="/nike-dunk-low/">나이키 덩크 로우 사이즈<span>정사이즈</span></a>
+      <a href="/newbalance-993/">뉴발란스 993 사이즈<span>D(스탠다드) 기준 정사이즈</span></a>
+      <a href="/crocs-classic-clog/">크록스 클래식 클로그 사이즈<span>운동화 사이즈보다 한 사이즈(10mm) 다운</span></a>
+      <a href="/nike-air-jordan-1/">나이키 에어 조던 1 사이즈<span>정사이즈</span></a>
       <a href="/">전체 신발 사이즈 환산표<span>mm · US · UK · EU · JP</span></a>
     </div>
   </section>

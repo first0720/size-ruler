@@ -11,7 +11,7 @@ html{scroll-behavior:smooth}
 body{
   background:var(--paper);color:var(--ink);
   word-break:keep-all;overflow-wrap:break-word;
-  font-family:Pretendard,-apple-system,sans-serif;
+  font-family:"Pretendard Variable",Pretendard,-apple-system,sans-serif;
   font-size:16px;line-height:1.65;
   -webkit-font-smoothing:antialiased;
 }
@@ -134,7 +134,7 @@ thead th{
 }
 tbody tr:nth-child(5n) td{border-bottom:1px solid var(--ink)}
 tbody th{background:#FAF8EF;font-weight:500;font-size:14px;border-right:1px solid var(--rule)}
-caption{caption-side:bottom;padding:10px;font-size:12px;color:var(--muted);text-align:left;font-family:Pretendard,sans-serif}
+caption{caption-side:bottom;padding:10px;font-size:12px;color:var(--muted);text-align:left;font-family:"Pretendard Variable",Pretendard,sans-serif}
 
 /* ---- faq ---- */
 details{border-bottom:1px solid var(--rule);padding:14px 0}
