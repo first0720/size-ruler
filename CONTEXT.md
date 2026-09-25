@@ -194,6 +194,17 @@ FAQ (JSON-LD FAQPage 포함)
 | 빌드 설정 | **Framework preset: None / Build command: 비움 / Output: `/`** |
 | 수익화 | 구글 애드센스 (미신청) |
 
+### style.css를 고칠 때 (중요)
+
+`_headers`가 style.css를 7일 캐시하고 Cloudflare 엣지도 캐시한다. 주소가 같으면 방문자는 최대 7일간 예전 CSS를 받는다.
+그래서 모든 페이지가 `/style.css?v=2`처럼 버전을 붙여 부른다. **CSS를 고치면 숫자를 올린다:**
+
+```bash
+grep -rl 'style.css?v=2' --include=*.py --include=*.html . | xargs sed -i 's#style.css?v=2#style.css?v=3#g'
+```
+
+(2026-09-25에 폰트 이름을 바꾸면서 이걸 안 해서, 한 시간가량 본문이 기본 글꼴로 보였다.)
+
 ### 도입하면 안 되는 것
 
 React, Next.js, Vue — 이 사이트 요구사항에 과하고 초기 로딩만 느려진다.
