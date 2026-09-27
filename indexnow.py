@@ -2,15 +2,18 @@
 """IndexNow로 네이버·빙에 사이트맵 URL 전체를 알린다. 배포(git push) 후 1~2분 뒤 실행.
 
 키 파일(루트의 <키>.txt)이 사이트에 올라가 있어야 한다. 네이버는 2023-07부터 IndexNow를 지원한다.
-실행: python indexnow.py
+실행: python indexnow.py            (사이트맵 전체)
+      python indexnow.py /about/ /   (바뀐 경로만)
 """
 import glob
 import json
 import re
+import sys
 import urllib.request
 
 key = next(f[:-4] for f in glob.glob("*.txt") if re.fullmatch(r"[0-9a-f]{32}\.txt", f))
-urls = re.findall(r"<loc>(.*?)</loc>", open("sitemap.xml", encoding="utf-8").read())
+urls = ([f"https://sizeruler.com{p}" for p in sys.argv[1:]]
+        or re.findall(r"<loc>(.*?)</loc>", open("sitemap.xml", encoding="utf-8").read()))
 body = json.dumps({"host": "sizeruler.com", "key": key,
                    "keyLocation": f"https://sizeruler.com/{key}.txt", "urlList": urls}).encode()
 for api in ("https://searchadvisor.naver.com/indexnow", "https://api.indexnow.org/indexnow"):
