@@ -18,10 +18,10 @@
 <meta name="theme-color" content="#FFCE00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -98,6 +98,8 @@
 
   <p class="crumb"><a href="/">전체 환산표</a> / 호카 스피드고트 6</p>
 
+  <div class="lead">
+
   <div class="hero">
     <p class="eyebrow">모델별 사이즈 가이드</p>
     <h1>호카 스피드고트 6 사이즈,<br><em>어떻게 골라야 할까</em></h1>
@@ -156,7 +158,9 @@
     </dl>
   </section>
 
-  <section>
+  </div>
+
+  <section class="notes">
     <h2>알아둘 점</h2>
     <h3>길이는 표기대로, 문제는 폭입니다</h3>
     <p>스피드고트 6은 mm 표기가 나이키·아식스와 같은 기준이고 길이도 표기대로 나옵니다. 다만 트레일 러닝화라 발을 옆에서 잡아주는 구조여서, 발볼이 넓으면 앞볼이 눌립니다. 이때 길이를 올리는 대신 와이드 버전을 고르는 것이 맞습니다.</p>
@@ -213,26 +217,31 @@
   var warn=document.getElementById("mmFindWarn");
   var rows=document.querySelectorAll("tbody tr[data-mm]");
   if(!input||!rows.length) return;
+  var KEY="sizeruler:mm";
 
-  input.addEventListener("input",function(){
-    var v=Number(input.value);
+  // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+  function mark(v, byUser){
     Array.prototype.forEach.call(rows,function(r){r.classList.remove("hit");});
-    if(!v){ warn.hidden=true; return; }
-
-    // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+    if(!v){ warn.hidden=true; return false; }
     var snapped=Math.round(v/5)*5, hit=null;
     Array.prototype.forEach.call(rows,function(r){
       if(Number(r.dataset.mm)===snapped) hit=r;
     });
-
-    if(hit){
-      warn.hidden=true;
-      hit.classList.add("hit");
+    warn.hidden=!!hit || !byUser;
+    if(!hit) return false;
+    hit.classList.add("hit");
+    if(byUser){
       hit.scrollIntoView({block:"nearest"});
-    }else{
-      warn.hidden=false;
+      try{ localStorage.setItem(KEY, snapped); }catch(e){}
     }
-  });
+    return true;
+  }
+
+  input.addEventListener("input",function(){ mark(Number(input.value), true); });
+
+  var saved=0;
+  try{ saved=Number(localStorage.getItem(KEY)); }catch(e){}
+  if(saved && !input.value && mark(saved, false)) input.value=saved;
 })();
 </script>
 

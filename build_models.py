@@ -4,7 +4,7 @@
 각 모델의 데이터를 MODELS에 넣고 실행하면 <slug>/index.html 을 만든다.
 템플릿을 한 곳에서 관리해 페이지마다 구조가 어긋나는 걸 막는다.
 """
-import json, os, html
+import json, os, html, re
 
 SIZES = [225, 230, 235, 240, 245, 250, 255, 260, 265, 270, 275, 280, 285, 290]
 
@@ -1937,32 +1937,38 @@ MODELS = [
 # 표 행 강조 스크립트.
 # f-string 템플릿 안에 직접 넣으면 JS 중괄호가 치환 필드로 해석되므로
 # 별도 상수로 두고 {finder_js} 자리에 끼워 넣는다.
+# 발 길이는 홈 줄자와 같은 키(sizeruler:mm)로 이 브라우저에만 저장해, 다음 모델 페이지에서도 내 줄을 미리 표시한다.
 FINDER_JS = """<script>
 (function(){
   var input=document.getElementById("mmFind");
   var warn=document.getElementById("mmFindWarn");
   var rows=document.querySelectorAll("tbody tr[data-mm]");
   if(!input||!rows.length) return;
+  var KEY="sizeruler:mm";
 
-  input.addEventListener("input",function(){
-    var v=Number(input.value);
+  // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+  function mark(v, byUser){
     Array.prototype.forEach.call(rows,function(r){r.classList.remove("hit");});
-    if(!v){ warn.hidden=true; return; }
-
-    // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+    if(!v){ warn.hidden=true; return false; }
     var snapped=Math.round(v/5)*5, hit=null;
     Array.prototype.forEach.call(rows,function(r){
       if(Number(r.dataset.mm)===snapped) hit=r;
     });
-
-    if(hit){
-      warn.hidden=true;
-      hit.classList.add("hit");
+    warn.hidden=!!hit || !byUser;
+    if(!hit) return false;
+    hit.classList.add("hit");
+    if(byUser){
       hit.scrollIntoView({block:"nearest"});
-    }else{
-      warn.hidden=false;
+      try{ localStorage.setItem(KEY, snapped); }catch(e){}
     }
-  });
+    return true;
+  }
+
+  input.addEventListener("input",function(){ mark(Number(input.value), true); });
+
+  var saved=0;
+  try{ saved=Number(localStorage.getItem(KEY)); }catch(e){}
+  if(saved && !input.value && mark(saved, false)) input.value=saved;
 })();
 </script>"""
 
@@ -2028,6 +2034,21 @@ def num(n):
     if isinstance(n, str):
         return n
     return str(int(n)) if float(n) == int(n) else str(n)
+
+
+def keep_phrases(text):
+    """결론 문구에서 줄이 끊기면 안 되는 곳을 <span class="nw">로 묶는다. 글자는 바꾸지 않는다.
+    - '반 사이즈 업' 같은 구, 짧은 가운뎃점 단어('미드·하이는')는 통째로
+    - 긴 가운뎃점 목록은 '나이키·'처럼 점 뒤에서만 끊기게
+    - 연산자는 뒤 항과 붙여 줄 끝에 '='·'−'가 홀로 남지 않게"""
+    nw = lambda m: f'<span class="nw">{m.group(0)}</span>'
+    text = re.sub(r"[반한] 사이즈 (?:업|다운)", nw, text)
+    text = re.sub(r"(?<![^\s(])[^\s·<>]+(?:·[^\s·<>]+)+",
+                  lambda m: nw(m) if len(m.group(0)) <= 10 else re.sub(r"[^\s·<>]+·", nw, m.group(0)), text)
+    text = re.sub(r"[=−~+] [^\s<>]{1,12}(?: [\d.]+)?(?=\s|$)", nw, text)
+    # 뒤 항이 이미 묶여 있으면 연산자를 그 묶음 안으로 넣는다 ('= 235mm(아디다스·')
+    text = re.sub(r'([=−~+]) <span class="nw">', r'<span class="nw">\1 ', text)
+    return text
 
 
 def eun_neun(word):
@@ -2114,6 +2135,12 @@ def build(m, others):
 
     srcs = " · ".join(m["sources"])
 
+    # 결론이 길면 글자 크기를 한 단계 줄인다 (표시만 바뀌고 문구는 그대로).
+    vlen = len(m["verdict"])
+    vcls = " is-xlong" if vlen > 26 else " is-long" if vlen > 14 else ""
+    # 권장 mm 열에 올림·내림 방향 표시를 붙이기 위한 표 클래스
+    tcls = "pick-table is-up" if m["offset"] > 0 else "pick-table is-down" if m["offset"] < 0 else "pick-table"
+
     finder_js = FINDER_JS
 
     return f"""<!DOCTYPE html>
@@ -2136,10 +2163,10 @@ def build(m, others):
 <meta name="theme-color" content="#FFCE00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -2162,15 +2189,17 @@ def build(m, others):
 
   <p class="crumb"><a href="/">전체 환산표</a> / {m['name']}</p>
 
+  <div class="lead">
+
   <div class="hero">
     <p class="eyebrow">모델별 사이즈 가이드</p>
     <h1>{m['name']} 사이즈,<br><em>어떻게 골라야 할까</em></h1>
   </div>
 
-  <div class="verdict">
+  <div class="verdict{vcls}">
     <div class="verdict-top">결론</div>
     <div class="verdict-body">
-      <strong>{m['verdict']}</strong>
+      <strong>{keep_phrases(m['verdict'])}</strong>
       <p>{m['verdict_sub']}</p>
     </div>
   </div>
@@ -2186,7 +2215,7 @@ def build(m, others):
       <span class="warn" id="mmFindWarn" hidden>표 범위를 벗어났습니다</span>
     </div>
     <div class="scroller">
-      <table class="pick-table">
+      <table class="{tcls}">
         <caption>{caption}</caption>
         <thead>
           <tr>{head_cells}</tr>
@@ -2205,7 +2234,9 @@ def build(m, others):
     </dl>{width_note}
   </section>
 
-  <section>
+  </div>
+
+  <section class="notes">
     <h2>알아둘 점</h2>
     {body.rstrip()}
   </section>
@@ -2239,6 +2270,15 @@ def build(m, others):
 
 
 if __name__ == "__main__":
+    # 줄바꿈 도우미 점검: 글자는 그대로 두고 묶을 곳만 묶는다
+    for s, spans in [("대부분 반 사이즈 업", 1), ("로우는 정사이즈, 미드·하이는 반 사이즈 업", 2),
+                     ("반 사이즈(5mm) 업", 0), ("270mm = US 9 (나이키·아디다스·뉴발란스·반스), 컨버스만 US 8.5", 4),
+                     ("호수 = 손가락 둘레(mm) − 43", 2),
+                     ("EU 38 = 235mm(아디다스·뉴발란스) ~ 245mm(컨버스)", 2)]:
+        out = keep_phrases(s)
+        assert re.sub(r"<[^>]+>", "", out) == s, out
+        assert out.count('class="nw"') == spans, out
+
     for m in MODELS:
         brand = m["name"].split()[0]
         # 목록 순서대로 고르면 앞쪽 모델만 링크를 받는다. 자기 다음 모델부터 돌아가며 고른다.

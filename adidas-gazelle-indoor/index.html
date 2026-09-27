@@ -18,10 +18,10 @@
 <meta name="theme-color" content="#FFCE00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -98,6 +98,8 @@
 
   <p class="crumb"><a href="/">전체 환산표</a> / 아디다스 가젤 인도어</p>
 
+  <div class="lead">
+
   <div class="hero">
     <p class="eyebrow">모델별 사이즈 가이드</p>
     <h1>아디다스 가젤 인도어 사이즈,<br><em>어떻게 골라야 할까</em></h1>
@@ -122,7 +124,7 @@
       <span class="warn" id="mmFindWarn" hidden>표 범위를 벗어났습니다</span>
     </div>
     <div class="scroller">
-      <table class="pick-table">
+      <table class="pick-table is-up">
         <caption>US·UK·EU는 권장 사이즈를 아디다스 공식 사이즈표에 대조한 값입니다. US 여성은 남녀공용 상품 기준입니다. 여성 전용 상품은 브랜드 여성 사이즈표를 따로 확인하세요(같은 mm에서 0.5 정도 차이가 납니다).</caption>
         <thead>
           <tr><th scope="col">내 발 길이</th><th scope="col">권장 mm</th><th scope="col">US 남성</th><th scope="col">US 여성</th><th scope="col">UK</th><th scope="col">EU</th></tr>
@@ -156,7 +158,9 @@
     </dl>
   </section>
 
-  <section>
+  </div>
+
+  <section class="notes">
     <h2>알아둘 점</h2>
     <h3>길이가 아니라 앞코 모양 때문에 올립니다</h3>
     <p>가젤 인도어는 앞으로 갈수록 볼이 좁아지고 전체적으로 낮게 빠진 실내 축구화 골입니다. 그래서 발 길이가 맞아도 발가락 쪽이 먼저 눌립니다. 일반 가젤과 같은 이유로 반 사이즈 업이 기본이고, 발볼이 넓으면 한 사이즈 업까지 봅니다.</p>
@@ -213,26 +217,31 @@
   var warn=document.getElementById("mmFindWarn");
   var rows=document.querySelectorAll("tbody tr[data-mm]");
   if(!input||!rows.length) return;
+  var KEY="sizeruler:mm";
 
-  input.addEventListener("input",function(){
-    var v=Number(input.value);
+  // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+  function mark(v, byUser){
     Array.prototype.forEach.call(rows,function(r){r.classList.remove("hit");});
-    if(!v){ warn.hidden=true; return; }
-
-    // 표는 5mm 단위다. 가장 가까운 줄을 찾는다.
+    if(!v){ warn.hidden=true; return false; }
     var snapped=Math.round(v/5)*5, hit=null;
     Array.prototype.forEach.call(rows,function(r){
       if(Number(r.dataset.mm)===snapped) hit=r;
     });
-
-    if(hit){
-      warn.hidden=true;
-      hit.classList.add("hit");
+    warn.hidden=!!hit || !byUser;
+    if(!hit) return false;
+    hit.classList.add("hit");
+    if(byUser){
       hit.scrollIntoView({block:"nearest"});
-    }else{
-      warn.hidden=false;
+      try{ localStorage.setItem(KEY, snapped); }catch(e){}
     }
-  });
+    return true;
+  }
+
+  input.addEventListener("input",function(){ mark(Number(input.value), true); });
+
+  var saved=0;
+  try{ saved=Number(localStorage.getItem(KEY)); }catch(e){}
+  if(saved && !input.value && mark(saved, false)) input.value=saved;
 })();
 </script>
 

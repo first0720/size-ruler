@@ -10,6 +10,8 @@
 import json
 import os
 
+from build_models import keep_phrases
+
 PAGES = [
     {
         "slug": "clothing-size-men",
@@ -180,7 +182,7 @@ PAGES = [
 
 
 def build(p):
-    tables = ""
+    sections = []
     for t in p["tables"]:
         head = "".join(f'<th scope="col">{h}</th>' for h in t["head"])
         rows = ""
@@ -192,7 +194,7 @@ def build(p):
                 else:
                     cells += f"<td>{v}</td>"
             rows += f"<tr>{cells}</tr>\n          "
-        tables += f"""
+        sections.append(f"""
   <section>
     <h2>{t['h2']}</h2>
     <p>{t['intro']}</p>
@@ -208,7 +210,11 @@ def build(p):
       </table>
     </div>
   </section>
-"""
+""")
+    # 첫 표는 넓은 화면에서 결론 옆에 선다
+    first_table, rest_tables = sections[0], "".join(sections[1:])
+    vlen = len(p["verdict"])
+    vcls = " is-xlong" if vlen > 26 else " is-long" if vlen > 14 else ""
 
     body = "".join(f"<h3>{h}</h3>\n    <p>{x}</p>\n    " for h, x in p["body"])
 
@@ -261,10 +267,10 @@ def build(p):
 <meta name="theme-color" content="#FFCE00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -287,20 +293,24 @@ def build(p):
 
   <p class="crumb"><a href="/">전체 환산표</a> / {p['name']}</p>
 
+  <div class="lead">
+
   <div class="hero">
     <p class="eyebrow">{p['eyebrow']}</p>
     <h1>{p['h1']}</h1>
   </div>
 
-  <div class="verdict">
+  <div class="verdict{vcls}">
     <div class="verdict-top">{p['verdict_top']}</div>
     <div class="verdict-body">
-      <strong>{p['verdict']}</strong>
+      <strong>{keep_phrases(p['verdict'])}</strong>
       <p>{p['verdict_sub']}</p>
     </div>
   </div>
-{tables}
-  <section>
+{first_table}
+  </div>
+{rest_tables}
+  <section class="notes">
     <h2>알아둘 점</h2>
     {body.rstrip()}
   </section>

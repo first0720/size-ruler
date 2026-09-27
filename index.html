@@ -19,7 +19,7 @@
 <meta name="theme-color" content="#FFCE00">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script type="application/ld+json">
 {
@@ -76,11 +76,11 @@
 }
 </script>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=2">
+<link rel="stylesheet" href="/style.css?v=3">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 </head>
-<body>
+<body class="home">
 
 <a class="skip" href="#table">본문 환산표로 건너뛰기</a>
 
@@ -586,6 +586,8 @@
     </div>
   </section>
 
+  <div class="pair">
+
   <section id="table">
     <h2>전체 환산표</h2>
     <p>발 길이 230mm부터 300mm까지, 5mm 단위 전체 표입니다. 남성 기준입니다. 여성 US 사이즈는 브랜드에 따라 남성보다 1~2 큽니다(나이키·뉴발란스·반스 1.5, 아디다스 1, 컨버스 2).</p>
@@ -624,6 +626,8 @@
     <h3>발볼도 같이 재면 좋습니다</h3>
     <p>엄지발가락 아래에서 새끼발가락 아래까지 가장 넓은 폭을 잽니다. 발 길이 대비 발볼이 넓으면 같은 mm라도 반 사이즈 올리는 쪽이 편합니다.</p>
   </section>
+
+  </div>
 
   <section id="faq">
     <h2>자주 묻는 것</h2>
@@ -671,30 +675,38 @@
   var input=document.getElementById("mmInput");
   // 모델 데이터는 HTML에 이미 있다. JS는 mm 숫자만 갱신한다.
   var brandRows=document.querySelectorAll(".brand[data-offset]");
-  var frag=document.createDocumentFragment();
+  var tableRows=document.querySelectorAll("#table tbody tr");
+  var reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // 발 길이는 이 브라우저에만 저장한다. 모델 페이지 표가 같은 값으로 내 줄을 표시한다.
+  var KEY="sizeruler:mm", touched=false;
+  try{ var saved=Number(localStorage.getItem(KEY)); if(MAP[saved]) base=saved; }catch(e){}
 
+  var frag=document.createDocumentFragment();
   for(var mm=MIN; mm<=MAX; mm+=STEP){
     var b=document.createElement("button");
     b.type="button";
     b.className="tick";
     b.dataset.mm=mm;
     b.dataset.major=(mm%10===0)?"1":"0";
-    b.setAttribute("aria-pressed", mm===base?"true":"false");
+    b.setAttribute("aria-pressed","false");
     b.setAttribute("aria-label", mm+"밀리미터");
+    b.tabIndex=-1;
     b.innerHTML="<i>"+mm+"</i>";
     frag.appendChild(b);
   }
   ticks.appendChild(frag);
 
   function fmt(n){ return Number.isInteger(n)? n : n.toFixed(1); }
+  function idx(mm){ return (mm-MIN)/STEP; }
+  function tickW(){ return ticks.firstElementChild.offsetWidth; }
 
-  var current=base;
+  var current=null;
 
-  function render(mm, fromInput){
-    var row=MAP[mm]; if(!row) return;
+  function render(mm, from){
+    var row=MAP[mm]; if(!row || mm===current) return;
     current=mm;
-    // 눈금 클릭이면 입력칸도 따라간다. 반대 방향은 커서가 튀므로 갱신하지 않는다.
-    if(!fromInput && input) input.value=mm;
+    // 입력칸에 타이핑 중이면 입력칸은 건드리지 않는다 (커서가 튄다)
+    if(from!=="input" && input && document.activeElement!==input) input.value=mm;
     document.getElementById("o-mm").textContent=mm;
     document.getElementById("o-us").textContent=fmt(row[0]);
     document.getElementById("o-usw").textContent=fmt(row[0]+1.5);
@@ -708,33 +720,129 @@
       if(pick) pick.textContent=mm+off;
     });
 
+    // 눈금은 선택된 것 하나만 탭으로 들어오고, 방향키로 옮긴다
     Array.prototype.forEach.call(ticks.children,function(t){
-      t.setAttribute("aria-pressed", Number(t.dataset.mm)===mm ? "true":"false");
+      var on=Number(t.dataset.mm)===mm;
+      t.setAttribute("aria-pressed", on?"true":"false");
+      t.tabIndex=on?0:-1;
+    });
+
+    // 전체 환산표에서 같은 줄을 표시한다
+    Array.prototype.forEach.call(tableRows,function(r){
+      r.classList.toggle("hit", Number(r.cells[0].textContent)===mm);
     });
   }
 
-  ticks.addEventListener("click",function(e){
-    var t=e.target.closest(".tick");
-    if(t) render(Number(t.dataset.mm));
+  // 판독선은 줄자 가운데 고정. 눈금 i가 가운데 올 때 scrollLeft = i * 눈금 폭
+  function scrollToMm(mm, smooth){
+    ticks.scrollTo({left: idx(mm)*tickW(), behavior: smooth && !reduce ? "smooth" : "auto"});
+  }
+
+  // 판독선 아래 있는 눈금의 mm
+  function mmAtCursor(){
+    var i=Math.round(ticks.scrollLeft/tickW());
+    return MIN+Math.max(0, Math.min(idx(MAX), i))*STEP;
+  }
+
+  var frame=0;
+  ticks.addEventListener("scroll",function(){
+    if(frame) return;
+    frame=requestAnimationFrame(function(){
+      frame=0;
+      render(mmAtCursor(), "scroll");
+    });
+  },{passive:true});
+
+  // 사용자가 직접 움직였을 때만 저장한다 (처음 위치 맞추기는 제외)
+  function settle(){
+    var mm=mmAtCursor();
+    render(mm, "scroll");
+    if(touched){ try{ localStorage.setItem(KEY, mm); }catch(e){} }
+  }
+  if("onscrollend" in window){
+    ticks.addEventListener("scrollend", settle);
+  }else{
+    var timer=0;
+    ticks.addEventListener("scroll",function(){ clearTimeout(timer); timer=setTimeout(settle, 160); },{passive:true});
+  }
+  ["pointerdown","wheel","keydown","touchstart"].forEach(function(type){
+    ticks.addEventListener(type,function(){ touched=true; },{passive:true});
   });
 
+  ticks.addEventListener("click",function(e){
+    var t=e.target.closest(".tick");
+    if(t) scrollToMm(Number(t.dataset.mm), true);
+  });
+
+  // 마우스로 테이프 끌기. 놓는 순간의 속도로 미끄러지다 5mm 눈금에 멈춘다.
+  // 터치와 트랙패드는 브라우저 기본 스크롤의 관성을 그대로 쓴다.
+  var drag=null, glide=0;
+  function swallow(e){ e.stopPropagation(); e.preventDefault(); }
+  function snap(){ glide=0; ticks.classList.remove("is-dragging"); scrollToMm(mmAtCursor(), true); }
+  ticks.addEventListener("pointerdown",function(e){
+    if(glide){ cancelAnimationFrame(glide); snap(); }
+    if(e.pointerType==="mouse" && e.button===0) drag={x:e.clientX, left:ticks.scrollLeft, moved:false, trail:[[e.timeStamp,e.clientX]]};
+  });
+  window.addEventListener("pointermove",function(e){
+    if(!drag) return;
+    var dx=e.clientX-drag.x;
+    if(!drag.moved && Math.abs(dx)<4) return;
+    if(!drag.moved){ drag.moved=true; ticks.classList.add("is-dragging"); }
+    ticks.scrollLeft=drag.left-dx;
+    drag.trail.push([e.timeStamp,e.clientX]);
+    if(drag.trail.length>8) drag.trail.shift();
+  });
+  window.addEventListener("pointerup",function(e){
+    if(!drag) return;
+    var d=drag; drag=null;
+    if(!d.moved) return;
+    // 끌기를 마친 자리의 눈금이 클릭으로 처리되지 않게 한 번 삼킨다
+    ticks.addEventListener("click", swallow, true);
+    setTimeout(function(){ ticks.removeEventListener("click", swallow, true); }, 0);
+
+    // 마지막 100ms 동안의 속도 (px/ms). 멈췄다 놓으면 0
+    var recent=d.trail.filter(function(p){ return e.timeStamp-p[0]<100; });
+    var v=0;
+    if(recent.length>1){
+      var a=recent[0], b=recent[recent.length-1];
+      if(b[0]>a[0]) v=-(b[1]-a[1])/(b[0]-a[0]);
+    }
+    if(reduce || Math.abs(v)<0.15){ snap(); return; }
+    var last=performance.now();
+    glide=requestAnimationFrame(function step(now){
+      var dt=Math.min(now-last, 32), before=ticks.scrollLeft;
+      last=now;
+      ticks.scrollLeft=before+v*dt;
+      v*=Math.pow(0.994, dt);
+      // 충분히 느려지거나 테이프 끝에 닿으면 가장 가까운 눈금으로
+      if(Math.abs(v)<0.04 || ticks.scrollLeft===before) snap();
+      else glide=requestAnimationFrame(step);
+    });
+  });
+
+  // 방향키 이동은 애니메이션 없이 바로 (반복 입력이 느려지지 않게)
   ticks.addEventListener("keydown",function(e){
-    if(e.key!=="ArrowLeft" && e.key!=="ArrowRight") return;
-    var t=e.target.closest(".tick"); if(!t) return;
-    var next=e.key==="ArrowRight"? t.nextElementSibling : t.previousElementSibling;
-    if(next){ e.preventDefault(); next.focus(); render(Number(next.dataset.mm)); }
+    var next=e.key==="ArrowRight"? current+STEP : e.key==="ArrowLeft"? current-STEP
+           : e.key==="Home"? MIN : e.key==="End"? MAX : 0;
+    if(!next || !MAP[next]) return;
+    e.preventDefault();
+    ticks.children[idx(next)].focus({preventScroll:true});
+    scrollToMm(next, false);
   });
 
   // 직접 입력 ↔ 줄자 동기화
   if(input){
     input.addEventListener("input",function(){
       var v=Number(input.value);
-      if(!v) return;
+      // 두 자리까지는 아직 입력 중이다
+      if(!v || v<100) return;
       // 5mm 단위로 맞춘다 (표에 없는 값은 표시할 수 없음)
       var snapped=Math.round(v/STEP)*STEP;
       if(snapped<MIN) snapped=MIN;
       if(snapped>MAX) snapped=MAX;
-      render(snapped, true);
+      touched=true;
+      render(snapped, "input");
+      scrollToMm(snapped, true);
     });
     input.addEventListener("blur",function(){
       // 입력을 떠날 때 실제 반영된 값으로 정리한다
@@ -742,10 +850,8 @@
     });
   }
 
-  render(base);
-  // 선택된 눈금이 보이도록 스크롤
-  var sel=ticks.querySelector('[aria-pressed="true"]');
-  if(sel) sel.scrollIntoView({block:"nearest",inline:"center"});
+  render(base, "init");
+  scrollToMm(base, false);
 })();
 </script>
 </body>
