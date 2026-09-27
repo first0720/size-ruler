@@ -21,6 +21,7 @@ EXTRA = [
     ("/eu-size-chart/", "유럽 신발 사이즈표", "브랜드별 EU 비교"),
     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
     ("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+    ("/narrow-feet-shoes/", "칼발 운동화", "작게 신는 모델과 그대로 신는 모델"),
     ("/nike-size-chart/", "나이키 사이즈표", "공식 환산과 모델별 권장"),
     ("/adidas-size-chart/", "아디다스 사이즈표", "공식 환산과 모델별 권장"),
     ("/newbalance-size-chart/", "뉴발란스 사이즈표", "공식 환산과 모델별 권장"),

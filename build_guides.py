@@ -134,10 +134,16 @@ def wide_group(m):
     raise ValueError(f"{m['slug']}: 발볼 넓음 가이드를 분류하지 못했습니다 — {first}")
 
 
-def wide_page():
-    groups = [[] for _ in WIDE_GROUPS]
+def group_rows(key, classify, n):
+    """모델을 발볼 가이드(key: '넓음'·'칼발') 첫 문장으로 n개 무리로 나눈 표 줄. 이름순."""
+    groups = [[] for _ in range(n)]
     for m in sorted(MODELS, key=lambda m: m["name"]):
-        groups[wide_group(m)].append([link(m), dict(m["widths"])["넓음"]])
+        groups[classify(m)].append([link(m), dict(m["widths"])[key]])
+    return groups
+
+
+def wide_page():
+    groups = group_rows("넓음", wide_group, len(WIDE_GROUPS))
     n0, n1, n2, n3 = (len(g) for g in groups)
     total = len(MODELS)
     return {
@@ -191,6 +197,7 @@ def wide_page():
         ],
         "related_h2": "함께 보면 좋은 페이지",
         "related": [("/newbalance-width/", "뉴발란스 발볼", "D·2E·4E 발 너비"),
+                    ("/narrow-feet-shoes/", "칼발 운동화", "작게 신는 모델과 그대로 신는 모델"),
                     ("/newbalance-size-chart/", "뉴발란스 사이즈표", "공식 환산 · 모델별 권장"),
                     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
                     ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
@@ -670,6 +677,93 @@ PAGES = [
 ]
 
 
+# 칼발 페이지: 모델 페이지 '칼발' 가이드의 첫 문장으로 나눈다. 순서는 표 순서(작게 → 폭 옵션 → 올림 → 그대로).
+NARROW_GROUPS = [
+    ("칼발이면 작게 신는 모델",
+     "칼발이면 평소보다 반~한 사이즈 작게 신는 모델입니다. 골이 넉넉하거나 원래 작게 신는 모델이 여기에 듭니다."),
+    ("B·내로우 폭이 있는 모델", "같은 길이에 폭만 좁힌 상품이 있는 모델입니다. 폭 옵션을 못 구할 때의 대안도 함께 적었습니다."),
+    ("칼발이어도 올리는 모델", "앞코가 좁아 칼발이어도 평소보다 크게 신는 모델입니다."),
+    ("칼발도 평소 사이즈 그대로인 모델", "칼발이어도 평소 사이즈 그대로가 기준인 모델입니다. 남는 느낌은 끈으로 조절하세요."),
+]
+# 아래 페이지 문구에 이름을 적은 모델. __main__에서 무리가 맞는지 확인한다.
+NARROW_NAMED = {0: ["nike-air-force-1", "adidas-campus-00s", "newbalance-9060", "converse-jack-purcell", "nike-v2k-run",
+                    "newbalance-327", "adidas-superstar"],
+                1: ["newbalance-993", "birkenstock-boston"],
+                2: ["adidas-gazelle"],
+                3: ["nike-dunk-low", "nike-air-jordan-1", "nike-zoom-vomero-5", "nike-p-6000"]}
+
+
+def narrow_group(m):
+    first = dict(m["widths"])["칼발"].split(".")[0]
+    if "내로우" in first:
+        return 1
+    if "다운" in first:
+        return 0
+    if first.startswith("반 사이즈 업"):
+        return 2
+    if first.startswith(("정사이즈", "D 정사이즈", "평소 사이즈 그대로")):
+        return 3
+    raise ValueError(f"{m['slug']}: 칼발 가이드를 분류하지 못했습니다 — {first}")
+
+
+def narrow_page():
+    groups = group_rows("칼발", narrow_group, len(NARROW_GROUPS))
+    n0, n1, n2, n3 = (len(g) for g in groups)
+    total = len(MODELS)
+    return {
+        "slug": "narrow-feet-shoes",
+        "name": "칼발 운동화",
+        "title": f"칼발 운동화 — 모델 {total}개, 작게 신는 모델과 그대로 신는 모델",
+        "desc": f"발볼이 좁은 칼발일 때 몇 mm를 신어야 하는지 모델 {total}개를 정리했습니다. 에어포스 1·캠퍼스 00s처럼 작게 신는 모델, "
+                "B·내로우 폭이 있는 모델, 칼발도 그대로 신는 모델로 나눴습니다.",
+        "eyebrow": f"칼발 · 모델 {total}개",
+        "h1": "칼발이라고 <em>무조건 반다운은 아닙니다</em>",
+        "verdict_top": f"모델 {total}개 중",
+        "verdict": f"{n0}개만 칼발이면 작게 신습니다",
+        "verdict_sub": f"{n3}개는 칼발도 평소 사이즈 그대로, {n1}개는 B·내로우 폭으로 맞추고, {n2}개는 칼발이어도 반 사이즈 올립니다. "
+                       "모두 평소 신는 사이즈 기준이며, 사이즈를 내리기 전에 끈을 발등까지 조여 헐거움을 먼저 잡아 보세요.",
+        "tables": [{"h2": h, "intro": i, "caption": "모두 평소 신는 사이즈 기준입니다. 근거는 모델 페이지에 있습니다.",
+                    "head": ["모델", "칼발일 때"], "rows": rows, "highlight": 0}
+                   for (h, i), rows in zip(NARROW_GROUPS, groups)],
+        "body": [
+            ("내리기 전에 끈으로 먼저 잡으세요",
+             "칼발은 길이가 맞아도 좌우가 남아 헐겁게 느껴집니다. 이때 사이즈를 내리면 길이도 5mm 줄어 발가락이 닿을 수 있으니, "
+             "먼저 끈을 발등까지 조여 보고 그래도 뒤꿈치가 뜨면 반 사이즈 내리세요."),
+            ("안이 넉넉한 모델일수록 칼발은 작게",
+             "캠퍼스 00s·9060·잭퍼셀처럼 폭이 넉넉한 모델은 칼발이면 발이 좌우로 놀아 반 사이즈 다운을 권합니다. "
+             "반대로 <a href=\"/adidas-gazelle/\">가젤</a>처럼 앞코가 좁은 모델은 칼발이어도 반 사이즈 업입니다."),
+            ("B·내로우 폭이 있으면 그쪽이 먼저",
+             "뉴발란스 993은 B(내로우), 버켄스탁 보스턴은 내로우 폭이 따로 나옵니다. 국내에서는 993 B를 구하기 어려워 "
+             "D에 끈을 조여 신는 경우가 많고, 버켄스탁은 내로우가 없는 컬러라면 레귤러 한 사이즈 다운도 방법입니다. "
+             "폭 표기는 <a href=\"/newbalance-width/\">뉴발란스 발볼 D·2E·4E</a>에 정리했습니다."),
+            ("권장은 착용 경향입니다",
+             "각 모델의 권장은 브랜드 공식 안내, KREAM 사이즈 팁, 착용 후기를 모은 경향입니다. "
+             "발 모양에 따라 결과가 다를 수 있으니 모델 페이지의 근거와 발볼별 가이드를 함께 보세요."),
+        ],
+        "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)"],
+        "faq": [
+            ("칼발은 반 사이즈 다운해야 하나요?",
+             f"아닙니다. 모델 {total}개 중 {n3}개는 칼발도 평소 사이즈 그대로입니다. "
+             f"에어포스 1·캠퍼스 00s·9060처럼 안이 넉넉하거나 원래 작게 신는 모델 {n0}개만 칼발이면 작게 신습니다."),
+            ("칼발에게 맞는 나이키는?",
+             "에어포스 1은 칼발이면 반 사이즈 다운을 고려하고, V2K 런은 원래 반 사이즈 다운 모델이라 발이 많이 얇으면 "
+             "한 사이즈 다운도 가능합니다. 덩크 로우·에어 조던 1·보메로 5·P-6000은 칼발도 정사이즈입니다."),
+            ("칼발에게 맞는 뉴발란스는?",
+             "993은 B(내로우)가 있으면 B, 없으면 D에 끈을 조여 신습니다. 327은 반 사이즈 다운이고 발이 많이 얇으면 한 사이즈 다운, "
+             "9060은 폭이 넓어 정사이즈 또는 반 사이즈 다운입니다."),
+            ("칼발에게 맞는 아디다스는?",
+             "캠퍼스 00s·슈퍼스타는 원래 반 사이즈 다운 모델이고 발이 많이 얇으면 한 사이즈 다운도 가능합니다. "
+             "가젤은 칼발이어도 앞코가 좁아 반 사이즈 업입니다."),
+        ],
+        "related_h2": "함께 보면 좋은 페이지",
+        "related": [("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+                    ("/newbalance-width/", "뉴발란스 발볼", "B·D·2E·4E 발 너비"),
+                    ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
+                    ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
+        "note": "착용 경향은 모델과 생산 시기에 따라 달라질 수 있으며, 개인의 발 모양에 따라 결과가 다를 수 있습니다.",
+    }
+
+
 FOOT_LINK = '<a href="/foot-length-chart/">발 길이로 사이즈 찾기</a>'
 
 PAGES += [
@@ -814,6 +908,7 @@ PAGES += [
              "US로 고를 때만 그렇습니다. mm로 고르면 평소 사이즈 그대로이고, 척 70은 발볼이 넓으면 반 사이즈 업을 고려하세요."),
         ]),
     wide_page(),
+    narrow_page(),
 ]
 
 
@@ -985,6 +1080,7 @@ if __name__ == "__main__":
     # 브랜드·발볼 페이지 문구에 손으로 적은 숫자와 모델 결론이 데이터와 맞는지.
     by = {m["slug"]: m for m in MODELS}
     assert all(wide_group(by[s]) == g for g, ss in WIDE_NAMED.items() for s in ss)
+    assert all(narrow_group(by[s]) == g for g, ss in NARROW_NAMED.items() for s in ss)
     assert NIKE_MAP[270] == (9, 10.5, 8, 42.5) and NIKE_MAP[265][3] == NB_MAP[265][3] == 42
     assert all(NIKE_W[mm][0] == NIKE_MAP[mm][1] - 0.5 for mm in range(245, 275, 5))
     assert all(NB_W[mm][0] == NB_MAP[mm][1] - 0.5 for mm in NB_W)
