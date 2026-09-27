@@ -15,7 +15,7 @@ MODELS = [
         "kw": "아디다스 삼바 사이즈",
         "title": "아디다스 삼바 사이즈 — 정사이즈인가? 발볼별 권장 mm",
         "desc": "아디다스 삼바는 보통 발볼이면 정사이즈, 발볼이 넓으면 반 사이즈 업. "
-                "아디다스 공식 안내를 기준으로 발 길이별 권장 사이즈를 정리했습니다.",
+                "아디다스 공식 안내를 기준으로 평소 사이즈별 권장 사이즈를 정리했습니다.",
         "verdict": "보통 발볼이면 정사이즈",
         "verdict_sub": "발볼이 넓다면 반 사이즈(5mm) 업하세요. 삼바는 길이보다 발볼에서 갈립니다.",
         "offset": 0,
@@ -179,7 +179,7 @@ MODELS = [
         "kw": "컨버스 척테일러 사이즈",
         "title": "컨버스 척테일러 사이즈 — 칼발은 정사이즈, 발볼 있으면 반업",
         "desc": "컨버스 척테일러 올스타는 칼발이면 정사이즈, 발볼이 있으면 반~한 사이즈 업. "
-                "발 길이별 권장 사이즈를 정리했습니다.",
+                "평소 사이즈별 권장 사이즈를 정리했습니다.",
         "verdict": "칼발은 정사이즈, 발볼 있으면 반 사이즈 업",
         "verdict_sub": "척테일러는 발볼에서 갈립니다. 길이는 오히려 넉넉한 편이라 크게 신으면 실루엣이 부담스러워집니다.",
         "offset": 0,
@@ -224,7 +224,7 @@ MODELS = [
         "kw": "뉴발란스 530 사이즈",
         "title": "뉴발란스 530 사이즈 — 발 모양을 크게 타지 않는 정사이즈",
         "desc": "뉴발란스 530은 정사이즈. 발볼이 넉넉하고 어퍼 신축성이 좋아 발 모양을 크게 타지 않습니다. "
-                "발 길이별 권장 사이즈를 정리했습니다.",
+                "평소 사이즈별 권장 사이즈를 정리했습니다.",
         "verdict": "정사이즈",
         "verdict_sub": "발볼이 넉넉하고 어퍼가 늘어나는 편이라, 발 모양과 무관하게 표기 사이즈 그대로가 맞습니다.",
         "offset": 0,
@@ -1937,7 +1937,7 @@ MODELS = [
 # 표 행 강조 스크립트.
 # f-string 템플릿 안에 직접 넣으면 JS 중괄호가 치환 필드로 해석되므로
 # 별도 상수로 두고 {finder_js} 자리에 끼워 넣는다.
-# 발 길이는 홈 줄자와 같은 키(sizeruler:mm)로 이 브라우저에만 저장해, 다음 모델 페이지에서도 내 줄을 미리 표시한다.
+# 평소 사이즈는 홈 줄자와 같은 키(sizeruler:mm)로 이 브라우저에만 저장해, 다음 모델 페이지에서도 내 줄을 미리 표시한다.
 FINDER_JS = """<script>
 (function(){
   var input=document.getElementById("mmFind");
@@ -2064,7 +2064,7 @@ def eun_neun(word):
 
 
 def build(m, others):
-    # 정사이즈 모델은 '권장 mm'가 '내 발 길이'와 값이 같다.
+    # 정사이즈 모델은 '권장 mm'가 '평소 사이즈'와 값이 같다.
     # 같은 숫자를 두 번 보여주면 표만 넓어지고 읽는 사람은 헷갈린다.
     same = (m["offset"] == 0)
 
@@ -2077,7 +2077,7 @@ def build(m, others):
         rows += (f'<tr data-mm="{mm}"><th scope="row">{mm}</th>{pick}'
                  f'<td>{num(us)}</td><td>{num(usw)}</td><td>{num(uk)}</td><td>{num(eu)}</td></tr>\n          ')
 
-    head_cells = '<th scope="col">내 발 길이</th>'
+    head_cells = '<th scope="col">평소 사이즈</th>'
     if not same:
         head_cells += '<th scope="col">권장 mm</th>'
     head_cells += ('<th scope="col">US 남성</th><th scope="col">US 여성</th>'
@@ -2088,9 +2088,9 @@ def build(m, others):
     caption += " US 여성은 남녀공용 상품 기준입니다. 여성 전용 상품은 브랜드 여성 사이즈표를 따로 확인하세요(같은 mm에서 0.5 정도 차이가 납니다)."
 
     table_intro = (f"{m['name']}{eun_neun(m['name'])} 정사이즈라 표기 사이즈를 그대로 고르면 됩니다. "
-                   "아래는 발 길이에 해당하는 각국 사이즈입니다."
+                   "아래는 평소 사이즈에 해당하는 각국 사이즈입니다."
                    if same else
-                   f"왼쪽이 실제 발 길이, 오른쪽이 {m['name']}에서 주문할 사이즈입니다.")
+                   f"왼쪽이 평소 신는 사이즈, 오른쪽이 {m['name']}에서 주문할 사이즈입니다.")
 
     widths = "".join(
         f'<div class="width-row"><dt>{w}</dt><dd>{t}</dd></div>\n      '
@@ -2205,10 +2205,10 @@ def build(m, others):
   </div>
 
   <section>
-    <h2>내 발 길이별 권장 사이즈</h2>
+    <h2>평소 사이즈별 권장 사이즈</h2>
     <p>{table_intro}</p>
     <div class="entry">
-      <label for="mmFind">내 발 길이</label>
+      <label for="mmFind">평소 사이즈</label>
       <input id="mmFind" type="number" inputmode="numeric" min="225" max="290" step="5"
              placeholder="270" aria-describedby="mmFindHint">
       <span class="hint" id="mmFindHint">입력하면 해당 줄을 표시합니다</span>
