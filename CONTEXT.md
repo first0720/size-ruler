@@ -203,10 +203,10 @@ FAQ (JSON-LD FAQPage 포함)
 ### style.css를 고칠 때 (중요)
 
 `_headers`가 style.css를 7일 캐시하고 Cloudflare 엣지도 캐시한다. 주소가 같으면 방문자는 최대 7일간 예전 CSS를 받는다.
-그래서 모든 페이지가 `/style.css?v=3`처럼 버전을 붙여 부른다. **CSS를 고치면 숫자를 올린다:**
+그래서 모든 페이지가 `/style.css?v=4`처럼 버전을 붙여 부른다. **CSS를 고치면 숫자를 올린다:**
 
 ```bash
-grep -rl 'style.css?v=3' --include=*.py --include=*.html . | xargs sed -i 's#style.css?v=3#style.css?v=4#g'
+grep -rl 'style.css?v=4' --include=*.py --include=*.html . | xargs sed -i 's#style.css?v=4#style.css?v=5#g'
 ```
 
 (2026-09-25에 폰트 이름을 바꾸면서 이걸 안 해서, 한 시간가량 본문이 기본 글꼴로 보였다.)
@@ -265,6 +265,21 @@ Netlify CLI, Vercel CLI로 직접 배포하지 말 것.
 나이키 270, 뉴발란스 265로 갈린다는 점과 '신어 본 평소 사이즈가 먼저'라는 안내를 페이지에 적었다.
 
 사이트 소개(/about/)에 문의 이메일 ydc3777@gmail.com을 넣었다 (개인정보처리방침 7번과 같은 주소, 2026-09-27).
+
+### 브랜드 사이즈표 5개와 발볼 넓은 운동화 페이지 (2026-09-27)
+
+`build_guides.py`의 `hub()`가 `/nike-size-chart/`·`/adidas-size-chart/`·`/newbalance-size-chart/`·`/vans-size-chart/`·
+`/converse-size-chart/`를 만든다. 환산표·모델 목록·결론 숫자는 `*_MAP`과 `MODELS`에서 나오고 설명 문구만 손으로 쓴다.
+문구에 적은 숫자와 모델 결론은 `__main__`의 assert가 데이터와 대조한다(결론이 바뀌면 빌드가 멈추니 문구도 같이 고친다).
+브랜드 단위 핏 일반화는 쓰지 않고 모델별 결론만 나열한다. 공식표를 대조한 이 다섯 브랜드의 모델 페이지는 경로가
+'전체 환산표 / 나이키 사이즈표 / 모델'로 한 단계 깊어졌다(`BRAND_HUBS`, BreadcrumbList 포함).
+
+`/wide-feet-shoes/`(발볼 넓은 운동화)는 모델 페이지 '넓음' 가이드의 첫 문장으로 모델을 네 무리로 나눈다(`wide_group()`):
+올리지 않음 / 2E·와이드 / 반 사이즈까지 / 한 사이즈까지. 분류하지 못한 문장이 있으면 빌드가 멈춘다.
+새 모델을 추가하면 '넓음' 가이드를 "정사이즈. …", "반 사이즈 업. …"처럼 결론으로 시작해야 한다.
+
+사이트맵에 `<lastmod>`를 넣었다: 커밋 전에 바뀐 파일은 오늘, 그대로인 파일은 마지막 커밋 날짜(`build_sitemap.py`).
+`.is-text` 표의 행 제목이 줄바꿈되도록 CSS를 고치고 `style.css?v=4`로 올렸다.
 
 #### 남은 결정
 없음.

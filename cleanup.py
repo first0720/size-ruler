@@ -20,6 +20,12 @@ EXTRA = [
     ("/us-size-chart/", "미국 신발 사이즈표", "브랜드별 US 비교"),
     ("/eu-size-chart/", "유럽 신발 사이즈표", "브랜드별 EU 비교"),
     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
+    ("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+    ("/nike-size-chart/", "나이키 사이즈표", "공식 환산과 모델별 권장"),
+    ("/adidas-size-chart/", "아디다스 사이즈표", "공식 환산과 모델별 권장"),
+    ("/newbalance-size-chart/", "뉴발란스 사이즈표", "공식 환산과 모델별 권장"),
+    ("/vans-size-chart/", "반스 사이즈표", "공식 환산과 모델별 권장"),
+    ("/converse-size-chart/", "컨버스 사이즈표", "공식 환산과 모델별 권장"),
 ]
 
 
@@ -64,7 +70,7 @@ def build_404(models):
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=3">
+<link rel="stylesheet" href="/style.css?v=4">
 </head>
 <body class="error">
 

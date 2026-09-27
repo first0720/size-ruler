@@ -6,11 +6,24 @@
 
 실행: python3 build_sitemap.py
 """
+import datetime
 import os
 import re
+import subprocess
 
 DOMAIN_FILE = "index.html"  # 현재 도메인을 여기서 읽는다
 EXCLUDE = {"404.html"}
+
+
+def lastmod(path):
+    """바뀐(커밋 전) 파일은 오늘, 그대로인 파일은 마지막 커밋 날짜. git이 없으면 오늘."""
+    f = "index.html" if path == "/" else f"{path.strip('/')}/index.html"
+    today = datetime.date.today().isoformat()
+    git = lambda *a: subprocess.run(["git", *a, "--", f], capture_output=True, text=True).stdout.strip()
+    try:
+        return today if git("status", "--porcelain") else (git("log", "-1", "--format=%cs") or today)
+    except FileNotFoundError:
+        return today
 
 
 def current_domain():
@@ -44,6 +57,7 @@ def main():
     for p in paths:
         lines += ["  <url>",
                   f"    <loc>https://{domain}{p}</loc>",
+                  f"    <lastmod>{lastmod(p)}</lastmod>",
                   "    <changefreq>monthly</changefreq>",
                   f"    <priority>{'1.0' if p == '/' else '0.8'}</priority>",
                   "  </url>"]

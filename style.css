@@ -390,6 +390,7 @@ tbody tr.hit>*{box-shadow:inset 0 1.5px 0 var(--tape-ink),inset 0 -1.5px 0 var(-
 /* 글이 긴 표는 줄을 바꾸고 왼쪽 정렬 */
 .is-text tbody td{white-space:normal;text-align:left;font-family:var(--sans);font-size:15px;font-weight:450;line-height:1.55;color:var(--ink-2);min-width:9em}
 .is-text thead th{text-align:left}
+.is-text tbody th{white-space:normal}
 @media (max-width:520px){
   th,td{padding:9px 6px}
   tbody th,tbody td{font-size:16px}

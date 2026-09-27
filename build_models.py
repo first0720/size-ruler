@@ -395,7 +395,7 @@ MODELS = [
         ],
         "body": [
             ("크록스의 mm는 운동화의 mm와 다른 숫자입니다",
-             "운동화 표기 사이즈는 발 길이에 여유분 10mm 정도를 더한 값입니다. 반면 크록스가 M9/W11 = 270mm라고 표기하는 값은 "
+             "나이키·아디다스 공식표로 운동화 270은 발 262~263mm에 맞춘 사이즈라, 표기가 발 길이보다 7~8mm 큽니다. 반면 크록스가 M9/W11 = 270mm라고 표기하는 값은 "
              "여유분 없는 발 실측 길이에 가깝습니다. 그래서 운동화를 270mm로 신는 사람의 실제 발은 260mm 안팎이고, "
              "크록스는 M8/W10(260mm)이 맞습니다. 평소 사이즈를 그대로 고르면 한 사이즈 큰 셈이 되어 발이 안에서 밀립니다."),
             ("10mm 단위만 있으니 애매하면 작은 쪽으로",
@@ -2015,6 +2015,10 @@ CONVERSE_MAP = {220:(3,5,3,35),225:(3.5,5.5,3.5,36),230:(4,6,4,36.5),235:(4.5,6.
                 265:(8,10,8,41.5),270:(8.5,10.5,8.5,42),275:(9,11,9,42.5),280:(9.5,11.5,9.5,43),
                 285:(10,12,10,44),290:(10.5,12.5,10.5,44.5),295:(11,13,11,45),300:(11.5,13.5,11.5,46)}
 
+# 공식표를 대조한 브랜드는 브랜드 사이즈표 페이지(build_guides.py)가 있고, 모델 페이지 경로에 끼운다.
+BRAND_HUBS = {"나이키": "nike-size-chart", "아디다스": "adidas-size-chart", "뉴발란스": "newbalance-size-chart",
+              "반스": "vans-size-chart", "컨버스": "converse-size-chart"}
+
 BRAND_CHARTS = {
     "나이키": (NIKE_MAP, "나이키 공식 사이즈표"),
     "아디다스": (ADIDAS_MAP, "아디다스 공식 사이즈표"),
@@ -2123,15 +2127,15 @@ def build(m, others):
     }, ensure_ascii=False, indent=2)
 
 
+    brand = m["name"].split()[0]
+    hub = BRAND_HUBS.get(brand)
+    trail = [("사이즈 자", "")] + ([(f"{brand} 사이즈표", f"{hub}/")] if hub else []) + [(m["name"], f"{m['slug']}/")]
     bc = json.dumps({
         "@context": "https://schema.org", "@type": "BreadcrumbList",
-        "itemListElement": [
-            {"@type": "ListItem", "position": 1, "name": "사이즈 자",
-             "item": "https://sizeruler.com/"},
-            {"@type": "ListItem", "position": 2, "name": m['name'],
-             "item": f"https://sizeruler.com/{m['slug']}/"},
-        ]
+        "itemListElement": [{"@type": "ListItem", "position": i, "name": n, "item": f"https://sizeruler.com/{u}"}
+                            for i, (n, u) in enumerate(trail, 1)]
     }, ensure_ascii=False, indent=2)
+    crumb_hub = f' / <a href="/{hub}/">{brand} 사이즈표</a>' if hub else ""
 
     srcs = " · ".join(m["sources"])
 
@@ -2166,7 +2170,7 @@ def build(m, others):
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=3">
+<link rel="stylesheet" href="/style.css?v=4">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -2187,7 +2191,7 @@ def build(m, others):
 
 <main class="wrap">
 
-  <p class="crumb"><a href="/">전체 환산표</a> / {m['name']}</p>
+  <p class="crumb"><a href="/">전체 환산표</a>{crumb_hub} / {m['name']}</p>
 
   <div class="lead">
 
