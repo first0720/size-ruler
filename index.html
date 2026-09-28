@@ -206,13 +206,13 @@
         <div class="brand-pick">270</div>
       </div>
 
-  <div class="brand" data-offset="-10">
+  <div class="brand" data-offset="0" data-round="down" data-sizes="210 220 230 240 250 260 265 270 280 290 300 310">
     <div>
       <div class="brand-name"><a href="/crocs-classic-clog/">크록스 클래식 클로그</a></div>
-      <div class="brand-note">운동화보다 한 사이즈(10mm) 다운. 크록스의 mm는 여유분 없는 발 실측 길이입니다. 반 사이즈가 없으니 애매하면 작은 쪽, 양말을 신거나 라인드 모델이면 정사이즈.
-        <span class="src">근거: 크록스 공식 사이즈 차트 · 착용 후기 다수</span></div>
+      <div class="brand-note">정사이즈. 평소 운동화 mm 그대로, 사이 사이즈면 작은 쪽. 크록스 코리아 표기로 270 = M9/W11, 265 = M8/W10, 260 = M7/W9라 US 숫자는 운동화와 다를 수 있습니다.
+        <span class="src">근거: 크록스 코리아 공식 사이즈표 · 공식몰 후기 160건</span></div>
     </div>
-    <div class="brand-pick up">260</div>
+    <div class="brand-pick">270</div>
   </div>
 
   <div class="brand" data-offset="0">
@@ -341,7 +341,7 @@
     <div class="brand-pick">270</div>
   </div>
 
-  <div class="brand" data-offset="0">
+  <div class="brand" data-offset="0" data-round="down" data-sizes="225 230 240 245 250 260 265 270 280 285 290 300 305 310">
     <div>
       <div class="brand-name"><a href="/birkenstock-boston/">버켄스탁 보스턴</a></div>
       <div class="brand-note">EU 기준 정사이즈(EU 42 = 270mm). 사이즈보다 레귤러·내로우 폭 구분이 먼저입니다. 사이에 걸리면 작은 쪽, 코르크는 2~3주 길듭니다.
@@ -350,13 +350,13 @@
     <div class="brand-pick">270</div>
   </div>
 
-  <div class="brand" data-offset="-5">
+  <div class="brand" data-offset="0" data-round="up" data-sizes="220 230 240 250 260 270 280 290 300 310 320">
     <div>
       <div class="brand-name"><a href="/dr-martens-1460/">닥터마틴 1460</a></div>
-      <div class="brand-note">반 사이즈(5mm) 다운. UK 홀 사이즈만 있고 크게 나옵니다. 운동화 270이면 UK 7(260). 발볼 넓거나 두꺼운 양말이면 정사이즈.
-        <span class="src">근거: 닥터마틴 공식 사이즈 가이드 · 착용 후기 다수</span></div>
+      <div class="brand-note">정사이즈. 닥터마틴 공식 안내와 1460 구매자 평가 모두 정사이즈입니다. UK 정수 사이즈만 있어 운동화 270이면 UK 8(270), 사이에 걸리면 큰 쪽에 깔창.
+        <span class="src">근거: 닥터마틴 공식 사이즈 가이드·FAQ · 1460 공식 상품 페이지 구매자 평가</span></div>
     </div>
-    <div class="brand-pick up">265</div>
+    <div class="brand-pick">270</div>
   </div>
 
   <div class="brand" data-offset="0">
@@ -371,7 +371,7 @@
   <div class="brand" data-offset="0">
     <div>
       <div class="brand-name"><a href="/puma-suede/">푸마 스웨이드 클래식</a></div>
-      <div class="brand-note">정사이즈. 아디다스와 같은 mm 기준. 1968년 골 그대로라 앞코가 낮고 좁아 발볼 넓거나 발등 높으면 반 업(가젤과 같은 기준).
+      <div class="brand-note">정사이즈. 푸마 공식표로 270 = US 9, EU 42. 1968년 골 그대로라 앞코가 낮고 좁아 발볼 넓거나 발등 높으면 반 업(가젤과 같은 기준).
         <span class="src">근거: 푸마 공식 사이즈 차트 · 착용 후기 다수</span></div>
     </div>
     <div class="brand-pick">270</div>
@@ -416,7 +416,7 @@
   <div class="brand" data-offset="-5">
     <div>
       <div class="brand-name"><a href="/timberland-6-inch/">팀버랜드 6인치 프리미엄 부츠</a></div>
-      <div class="brand-note">반 사이즈(5mm) 다운. 팀버랜드 공식 안내가 운동화보다 반 사이즈 작게 고르라고 명시합니다. US 표기만 있으니 US 8.5 = 265mm로 환산. 두꺼운 양말이면 정사이즈.
+      <div class="brand-note">반 사이즈(5mm) 다운. 팀버랜드 공식 안내가 크게 나온다며 반 사이즈 작게 고르라고 합니다. 코리아 공식 표기로 US 8.5 = 265mm. 두꺼운 양말이면 정사이즈.
         <span class="src">근거: 팀버랜드 공식 사이즈 가이드 · 착용 후기 다수</span></div>
     </div>
     <div class="brand-pick up">265</div>
@@ -851,7 +851,14 @@
     Array.prototype.forEach.call(brandRows,function(row){
       var off=Number(row.dataset.offset)||0;
       var pick=row.querySelector(".brand-pick");
-      if(pick) pick.textContent=mm+off;
+      var v=mm+off;
+      // 사이즈 간격이 넓은 모델은 모델 페이지 표처럼 사이에 걸리면 가까운 작은(큰) 사이즈를 보여준다
+      if(row.dataset.sizes){
+        var up=row.dataset.round==="up";
+        var c=row.dataset.sizes.split(" ").map(Number).filter(function(s){ return s===v || (up? s>v : s<v); });
+        if(c.length) v=up? Math.min.apply(null,c) : Math.max.apply(null,c);
+      }
+      if(pick) pick.textContent=v;
     });
 
     // 눈금은 선택된 것 하나만 탭으로 들어오고, 방향키로 옮긴다
