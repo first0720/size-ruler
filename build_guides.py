@@ -226,6 +226,7 @@ def wide_page():
         "related_h2": "함께 보면 좋은 페이지",
         "related": [("/newbalance-width/", "뉴발란스 발볼", "D·2E·4E 발 너비"),
                     ("/narrow-feet-shoes/", "칼발 운동화", "작게 신는 모델과 그대로 신는 모델"),
+                    ("/half-size-up/", "반업 뜻", "반 사이즈 업은 5mm"),
                     ("/newbalance-size-chart/", "뉴발란스 사이즈표", "공식 환산 · 모델별 권장"),
                     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
                     ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
@@ -1111,7 +1112,88 @@ def narrow_page():
         ],
         "related_h2": "함께 보면 좋은 페이지",
         "related": [("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+                    ("/half-size-up/", "반업 뜻", "반 사이즈 업은 5mm"),
                     ("/newbalance-width/", "뉴발란스 발볼", "B·D·2E·4E 발 너비"),
+                    ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
+                    ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
+        "note": "착용 경향은 모델과 생산 시기에 따라 달라질 수 있으며, 개인의 발 모양에 따라 결과가 다를 수 있습니다.",
+    }
+
+
+def half_page():
+    """반업 뜻: 평소 270에서 한 칸씩 움직인 값(공식표)과, 반업·반다운이 기준인 모델(MODELS의 offset)."""
+    total = len(MODELS)
+    ups = sorted((m for m in MODELS if m["offset"] > 0), key=lambda m: m["name"])
+    downs = sorted((m for m in MODELS if m["offset"] < 0), key=lambda m: m["name"])
+    n0 = total - len(ups) - len(downs)
+    steps = [("반다운", 265), ("정사이즈", 270), ("반업", 275), ("1업", 280)]
+    by = {m["slug"]: m for m in MODELS}
+    a = lambda s, t: f'<a href="/{s}/">{t}</a>'
+    return {
+        "slug": "half-size-up",
+        "name": "반업 뜻",
+        "title": "반업 뜻 — 신발 반 사이즈 업은 5mm, 1업은 10mm (반다운·정사이즈)",
+        "desc": "반업은 반 사이즈 업, 평소 신는 사이즈보다 5mm 크게 고른다는 뜻입니다. 1업은 10mm, 반다운은 5mm 작게입니다. "
+                "US·EU로는 몇 칸인지와 반업·반다운이 기준인 모델을 정리했습니다.",
+        "eyebrow": "반업 · 반다운 · 정사이즈",
+        "h1": "반업은 <em>5mm 크게</em> 신는다는 뜻입니다",
+        "verdict_top": "핵심",
+        "verdict": "반업 = 5mm, 1업 = 10mm",
+        "verdict_sub": f"평소 신는 사이즈가 기준입니다. 평소 270이라면 반업은 275, 1업은 280, 반다운은 265입니다. "
+                       f"이 사이트의 모델 {total}개 중 {n0}개는 정사이즈, {len(ups)}개는 반업, {len(downs)}개는 반다운 이상이 기준입니다.",
+        "tables": [
+            {"h2": "평소 270에서 한 칸씩 움직이면",
+             "intro": "mm로는 5mm, US로는 0.5씩 움직입니다. EU는 브랜드마다 한 칸의 크기가 다릅니다.",
+             "caption": "나이키·아디다스 공식 사이즈표 값입니다. 이 구간에서 US는 뉴발란스·반스도 나이키와 같고, 컨버스는 같은 mm에 반 칸 작은 숫자를 씁니다.",
+             "head": ["구분", "KR 표기", "나이키 US", "나이키 EU", "아디다스 EU"],
+             "rows": [[k, f"{mm}mm", num(NIKE_MAP[mm][0]), num(NIKE_MAP[mm][3]), num(ADIDAS_MAP[mm][3])] for k, mm in steps],
+             "highlight": 0},
+            {"h2": f"반업이 기준인 모델 {len(ups)}개",
+             "intro": "평소 신는 사이즈보다 반 사이즈 크게 고르는 모델입니다. 모델을 누르면 발볼별 가이드와 근거를 볼 수 있습니다.",
+             "caption": "모두 평소 신는 사이즈 기준입니다. 근거는 모델 페이지에 있습니다.",
+             "head": ["모델", "권장 사이즈"], "rows": [[link(m), m["verdict"]] for m in ups], "highlight": 0},
+            {"h2": f"반다운 이상이 기준인 모델 {len(downs)}개",
+             "intro": "크게 나오거나 안이 넉넉해 평소보다 작게 고르는 모델입니다.",
+             "caption": "모두 평소 신는 사이즈 기준입니다. 근거는 모델 페이지에 있습니다.",
+             "head": ["모델", "권장 사이즈"], "rows": [[link(m), m["verdict"]] for m in downs], "highlight": 0},
+        ],
+        "body": [
+            ("반업은 평소 사이즈 기준입니다",
+             "반업은 '반 사이즈 업'의 줄임말로, 평소 신는 사이즈보다 반 사이즈 크게 고른다는 뜻입니다. 국내 신발 사이즈는 5mm 단위라 "
+             "반 사이즈가 5mm이고, 1업(한 사이즈 업)은 10mm입니다. 반다운은 반대로 5mm 작게, 정사이즈는 평소 사이즈 그대로입니다."),
+            ("US·UK는 0.5, EU는 브랜드마다 다릅니다",
+             "US와 UK는 반 사이즈가 0.5라 반업하면 숫자가 0.5 올라갑니다. EU는 나이키·뉴발란스·반스·컨버스가 구간에 따라 0.5나 1씩 올라가고, "
+             "아디다스는 ⅓ 단위라 5mm마다 ⅔씩 올라갑니다. 해외 사이트에서 반업할 때는 EU보다 US 숫자에 0.5를 더하는 쪽이 덜 헷갈립니다."),
+            ("반업·반다운은 모델마다 갈립니다",
+             f"브랜드가 같아도 모델마다 다릅니다. 같은 아디다스라도 {a('adidas-gazelle', '가젤')}은 반업, "
+             f"{a('adidas-campus-00s', '캠퍼스 00s')}는 반다운이고, 같은 나이키라도 {a('nike-air-max-97', '에어맥스 97')}은 반업, "
+             f"{a('nike-v2k-run', 'V2K 런')}은 반다운입니다. 이 사이트의 모델 {total}개 중 {n0}개는 정사이즈가 기준이라, "
+             "반업·반다운이 필요한 모델만 위 표에 모았습니다."),
+            ("발볼 때문이라면 폭부터 보세요",
+             "발볼이 넓어서 반업하는 경우, 뉴발란스처럼 2E·4E 폭을 고를 수 있는 모델은 길이를 올리기보다 폭을 바꾸는 편이 낫습니다. "
+             "뉴발란스 폭 차트에서 D 폭은 길이가 5mm 늘 때 폭이 1~2mm만 늘어납니다. 발볼 기준 권장은 "
+             "<a href=\"/wide-feet-shoes/\">발볼 넓은 운동화</a>에 정리했습니다."),
+            ("부츠·털신은 작게 고르는 모델이 많습니다",
+             f"운동화보다 안이 넉넉한 부츠와 털신은 반대로 작게 고르는 모델이 많습니다. {a('dr-martens-1460', '닥터마틴 1460')}과 "
+             f"{a('timberland-6-inch', '팀버랜드 6인치')}는 반다운, {a('ugg-classic-mini', '어그 클래식 미니')}·"
+             f"{a('ugg-tasman', '태즈먼')}은 한 사이즈 다운입니다. 클로그는 갈려서 {a('crocs-classic-clog', '크록스')}는 한 사이즈 다운, "
+             f"{a('birkenstock-boston', '버켄스탁 보스턴')}은 EU 기준 정사이즈입니다."),
+        ],
+        "sources": ["나이키 코리아·아디다스·뉴발란스·반스·컨버스 공식 사이즈 차트", "뉴발란스 공식 폭 차트",
+                    "각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)"],
+        "faq": [
+            ("반업 뜻이 뭔가요?", "반 사이즈 업의 줄임말로, 평소 신는 사이즈보다 5mm 크게 고른다는 뜻입니다. 평소 270이라면 275입니다."),
+            ("1업은 몇 mm인가요?", "10mm입니다. 한 사이즈 업이라고도 하며, 평소 270이라면 280입니다."),
+            ("반다운은 무슨 뜻인가요?", "반 사이즈 다운, 평소보다 5mm 작게 고른다는 뜻입니다. 평소 270이라면 265입니다."),
+            ("정사이즈는 무슨 뜻인가요?", "평소 신는 사이즈 그대로라는 뜻입니다. 이 사이트의 권장 사이즈도 평소 사이즈를 기준으로 정리했습니다."),
+            ("US 사이즈로 반업하면 몇인가요?", "US 숫자에 0.5를 더합니다. 평소 US 9라면 반업은 9.5, 1업은 10입니다."),
+            ("반업이 기준인 신발은 뭐가 있나요?",
+             f"이 사이트 기준으로 {', '.join(m['name'] for m in ups[:4])} 등 {len(ups)}개입니다. 위 표에서 전체 목록을 볼 수 있습니다."),
+        ],
+        "related_h2": "함께 보면 좋은 페이지",
+        "related": [("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+                    ("/narrow-feet-shoes/", "칼발 운동화", "작게 신는 모델과 그대로 신는 모델"),
+                    ("/us-size-chart/", "미국 신발 사이즈표", "US 9가 모두 270mm는 아닙니다"),
                     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
                     ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
         "note": "착용 경향은 모델과 생산 시기에 따라 달라질 수 있으며, 개인의 발 모양에 따라 결과가 다를 수 있습니다.",
@@ -1266,6 +1348,7 @@ PAGES += [
         ]),
     wide_page(),
     narrow_page(),
+    half_page(),
 ]
 
 
@@ -1486,6 +1569,20 @@ if __name__ == "__main__":
     # GS(3.5Y~7Y)의 Y 숫자 = 같은 mm의 성인 남성 US, 7Y = 250mm = 남성 7 / 남녀공용 W 8.5
     assert all(s[:-1] in num(NIKE_MAP[mm][0]).split("·") for s, mm, _ in NIKE_KIDS[KID_IDX["3.5Y"]:])
     assert NIKE_MAP[250][:2] == (7, 8.5)
+    # 반업 뜻: 250~300mm에서 US·UK는 5mm마다 0.5, EU는 아디다스 ⅔·나머지는 0.5나 1. 본문 예시 모델의 offset.
+    def eu_f(v):
+        s = num(v)
+        return float(s[:-1]) + {"⅓": 1 / 3, "⅔": 2 / 3}[s[-1]] if s[-1] in "⅓⅔" else float(s)
+    rng = range(250, 305, 5)
+    for _, c in BRANDS:
+        assert all(float(c[b][k]) - float(c[a][k]) == 0.5 for a, b in zip(rng, rng[1:]) for k in (0, 2))
+        d = {round(eu_f(c[b][3]) - eu_f(c[a][3]), 2) for a, b in zip(rng, rng[1:])}
+        assert (d == {0.67}) if c is ADIDAS_MAP else (d <= {0.5, 1.0}), d
+    assert [by[s]["offset"] for s in ("adidas-gazelle", "adidas-campus-00s", "nike-air-max-97", "nike-v2k-run", "dr-martens-1460",
+                                      "timberland-6-inch", "ugg-classic-mini", "ugg-tasman", "crocs-classic-clog",
+                                      "birkenstock-boston")] == [5, -5, 5, -5, -5, -5, -10, -10, -10, 0]
+    dw = [int(r[2][:-2]) for r in PAGES[0]["tables"][0]["rows"]]  # 뉴발란스 남성 D 폭
+    assert {b - a for a, b in zip(dw, dw[1:])} <= {1, 2}
     # 닥터마틴 문단: 1460 페이지의 공식 환산이 나이키 줄과 같다.
     dm = " ".join(t for _, t in by["dr-martens-1460"]["body"])
     assert all(f"UK {u} = {mm}mm" in dm and hits(NIKE_MAP, 2, str(u)) == [mm] for u, mm in [(7, 260), (8, 270), (9, 280)])
