@@ -16,19 +16,21 @@ import os
 from fractions import Fraction
 
 from build_models import (MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP,
-                          CONVERSE_MAP, BRAND_HUBS, num, keep_phrases)
+                          CONVERSE_MAP, ASICS_MAP, BRAND_HUBS, num, keep_phrases)
 
 # (브랜드, KR mm -> (US 남성, US 여성, UK, EU)) — 남성·남녀공용 공식표
 BRANDS = [("나이키", NIKE_MAP), ("아디다스", ADIDAS_MAP), ("뉴발란스", NB_MAP),
           ("반스", VANS_MAP), ("컨버스", CONVERSE_MAP)]
 
-# 여성 전용 상품 공식표. KR mm -> (US 여성, EU). 같은 mm라도 남녀공용표와 0.5~1 다르다.
-NIKE_W = {215: (4.5, 35), 220: (5, 35.5), 225: (5.5, 36), 230: (6, 36.5), 235: (6.5, 37.5),
-          240: (7, 38), 245: (7.5, 38.5), 250: (8, 39), 255: (8.5, 40), 260: (9, 40.5),
-          265: (9.5, 41), 270: (10, 42)}  # 나이키 코리아 여성 신발 사이즈 차트
-NB_W = {220: (5, 35), 225: (5.5, 36), 230: (6, 36.5), 235: (6.5, 37), 240: (7, 37.5),
-        245: (7.5, 38), 250: (8, 39), 255: (8.5, 40), 260: (9, 40.5), 265: (9.5, 41),
-        270: (10, 41.5)}  # 뉴발란스 공식 사이즈 가이드 여성 표 (Length cm)
+# 여성 전용 상품 공식표. KR mm -> (US 여성, EU, UK). 같은 mm라도 남녀공용표와 0.5~1 다르다.
+# UK는 세 번째 칸이라 남녀공용표(UK도 세 번째 칸)와 같은 함수로 읽는다. (2026-09-28 공식표 재확인)
+NIKE_W = {215: (4.5, 35, 2), 220: (5, 35.5, 2.5), 225: (5.5, 36, 3), 230: (6, 36.5, 3.5), 235: (6.5, 37.5, 4),
+          240: (7, 38, 4.5), 245: (7.5, 38.5, 5), 250: (8, 39, 5.5), 255: (8.5, 40, 6), 260: (9, 40.5, 6.5),
+          265: (9.5, 41, 7), 270: (10, 42, 7.5)}  # 나이키 코리아 여성 신발 사이즈 차트
+NB_W = {220: (5, 35, 3), 225: (5.5, 36, 3.5), 230: (6, 36.5, 4), 235: (6.5, 37, 4.5), 240: (7, 37.5, 5),
+        245: (7.5, 38, 5.5), 250: (8, 39, 6), 255: (8.5, 40, 6.5), 260: (9, 40.5, 7), 265: (9.5, 41, 7.5),
+        270: (10, 41.5, 8)}  # 뉴발란스 공식 사이즈 가이드 여성 표 (Length cm)
+W_BRANDS = [("나이키", NIKE_W), ("뉴발란스", NB_W)]
 
 # 공식표의 발 길이 (2026-09-27 확인). KR 표기(mm) -> 공식표 값.
 # 나이키 코리아 차트는 인치 분수, 235·240은 두 줄. 아디다스는 뒤꿈치~발끝(cm).
@@ -211,20 +213,44 @@ CHART_SOURCES = ["나이키 코리아 남성·여성 신발 사이즈 차트", "
 
 
 def by_mm(col, mms):
-    """KR mm 줄마다 브랜드별 값(col: 0=US 남성, 1=US 여성, 3=EU)."""
+    """KR mm 줄마다 브랜드별 값(col: 0=US 남성, 1=US 여성, 2=UK, 3=EU)."""
     return [[f"{mm}mm"] + [num(m.get(mm, ("—",) * 4)[col]) for _, m in BRANDS] for mm in mms]
 
 
-def eu_to_mm(eus, charts):
-    """EU 숫자마다 공식표에서 정확히 그 숫자가 붙은 mm. charts: [(표, EU 열 번호)]."""
-    rows = []
-    for eu in eus:
-        row = [f"EU {eu}"]
-        for chart, col in charts:
-            hits = [mm for mm, v in sorted(chart.items()) if eu in str(v[col]).split("·")]
-            row.append(" / ".join(f"{h}mm" for h in hits) or "—")
-        rows.append(row)
-    return rows
+def hits(chart, col, size):
+    """공식표에서 정확히 그 사이즈 숫자가 붙은 mm들. 공식표 두 줄이 한 칸에 '4·4.5'로 들어 있어도 찾는다."""
+    return [mm for mm, v in sorted(chart.items()) if size in num(v[col]).split("·")]
+
+
+def mm_text(chart, col, size):
+    """문장용. '270mm', 공식표 두 줄에 붙은 숫자면 '245·250mm', 없으면 ''."""
+    h = hits(chart, col, size)
+    return "·".join(map(str, h)) + "mm" if h else ""
+
+
+def to_mm(label, sizes, charts):
+    """사이즈 숫자마다 브랜드별 mm 칸. charts: [(표, 열 번호)]. label이 비면 행 이름은 숫자만(열 제목이 대신한다).
+    공식표 두 줄에 붙은 숫자는 칸 안에서 두 줄로 쌓아 좁은 화면에서도 표가 넘치지 않게 한다."""
+    return [[f"{label} {s}" if label else s]
+            + ["<br>".join(f"{h}mm" for h in hits(chart, col, s)) or "—" for chart, col in charts] for s in sizes]
+
+
+def grouped(pairs, fmt):
+    """[(브랜드, 값)] -> '나이키·반스 270mm, 아디다스 265mm'. 값이 같은 브랜드를 처음 나온 순서대로 묶는다."""
+    g = {}
+    for brand, v in pairs:
+        if v:
+            g.setdefault(v, []).append(brand)
+    return ", ".join(f"{'·'.join(bs)} {fmt.format(v)}" for v, bs in g.items())
+
+
+def uk_mm(uk, charts=BRANDS):
+    """UK 숫자가 브랜드마다 몇 mm인지 문장 조각으로. 여성 전용표도 UK가 세 번째 칸이라 그대로 넣는다."""
+    return grouped([(b, mm_text(c, 2, uk)) for b, c in charts], "{}")
+
+
+def mm_uk(mm, charts=BRANDS):
+    return grouped([(b, num(c[mm][2])) for b, c in charts], "UK {}")
 
 
 def model_link(slug):
@@ -411,7 +437,8 @@ PAGES = [
              "US 숫자는 브랜드마다 뜻이 달라서, 평소 mm를 US로 바꿔 주문하면 반 사이즈씩 어긋나기 쉽습니다. "
              "사이즈 선택지나 상품 태그에 cm(JP) 값이 함께 있으면 그 값을 평소 mm와 맞추세요. "
              "컨버스 태그에는 'US M 8.5 / CM 27'처럼 둘이 같이 적혀 있습니다. "
-             "UK·EU도 브랜드마다 다르니 <a href=\"/eu-size-chart/\">유럽 신발 사이즈표</a>를 함께 보세요."),
+             "UK·EU도 브랜드마다 다르니 <a href=\"/uk-size-chart/\">영국 신발 사이즈표</a>와 "
+             "<a href=\"/eu-size-chart/\">유럽 신발 사이즈표</a>를 함께 보세요."),
             ("사이즈 숫자와 핏은 별개입니다",
              "이 표는 같은 길이에 어떤 숫자가 붙는지를 보여줄 뿐, 신었을 때의 핏은 모델마다 다릅니다. 같은 아디다스 안에서도 "
              "<a href=\"/adidas-samba/\">삼바</a>는 보통 발볼이면 정사이즈, <a href=\"/adidas-gazelle/\">가젤</a>은 대부분 반 사이즈 업, "
@@ -436,6 +463,7 @@ PAGES = [
         "related_h2": "함께 보면 좋은 페이지",
         "related": [
             ("/eu-size-chart/", "유럽 신발 사이즈표", "EU 38·42는 몇 mm?"),
+            ("/uk-size-chart/", "영국 신발 사이즈표", "UK 8은 몇 mm?"),
             ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
             model_link("converse-chuck-taylor"),
             model_link("nike-air-force-1"),
@@ -464,7 +492,7 @@ PAGES = [
                 "caption": "남성·남녀공용 공식표에 정확히 그 EU 숫자가 있는 경우만 적었습니다. "
                            "아디다스는 EU를 ⅓ 단위로 매겨 37·39·41 같은 숫자가 없습니다.",
                 "head": ["EU", "나이키", "아디다스", "뉴발란스", "반스", "컨버스"],
-                "rows": eu_to_mm(["36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"],
+                "rows": to_mm("EU", ["36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46"],
                                  [(m, 3) for _, m in BRANDS]),
                 "highlight": 0,
             },
@@ -481,7 +509,7 @@ PAGES = [
                 "intro": "여성 전용으로 나온 상품은 여성 사이즈표를 씁니다. 같은 EU 숫자라도 남녀공용 상품보다 긴 신발일 수 있습니다.",
                 "caption": "나이키 코리아 여성 신발 사이즈 차트, 뉴발란스 공식 사이즈 가이드 여성 표, 두 브랜드 남성표의 값입니다.",
                 "head": ["EU", "나이키 여성 전용", "뉴발란스 여성 전용", "나이키 남녀공용", "뉴발란스 남녀공용"],
-                "rows": eu_to_mm(["35", "36", "36.5", "37", "37.5", "38", "38.5", "39", "40", "40.5", "41"],
+                "rows": to_mm("EU", ["35", "36", "36.5", "37", "37.5", "38", "38.5", "39", "40", "40.5", "41"],
                                  [(NIKE_W, 1), (NB_W, 1), (NIKE_MAP, 3), (NB_MAP, 3)]),
                 "highlight": 0,
             },
@@ -505,7 +533,8 @@ PAGES = [
             ("EU로만 파는 브랜드는 따로 확인하세요",
              "버켄스탁처럼 EU 숫자로만 파는 브랜드는 위 다섯 브랜드와 기준이 또 다를 수 있습니다. "
              "<a href=\"/birkenstock-boston/\">버켄스탁 보스턴 사이즈</a>처럼 모델 페이지가 있으면 그쪽을 참고하세요. "
-             "US 기준 비교는 <a href=\"/us-size-chart/\">미국 신발 사이즈표</a>에 있습니다."),
+             "US·UK 기준 비교는 <a href=\"/us-size-chart/\">미국 신발 사이즈표</a>와 "
+             "<a href=\"/uk-size-chart/\">영국 신발 사이즈표</a>에 있습니다."),
         ],
         "sources": CHART_SOURCES,
         "faq": [
@@ -527,9 +556,99 @@ PAGES = [
         "related_h2": "함께 보면 좋은 페이지",
         "related": [
             ("/us-size-chart/", "미국 신발 사이즈표", "US 9가 모두 270mm는 아닙니다"),
+            ("/uk-size-chart/", "영국 신발 사이즈표", "UK 8은 몇 mm?"),
             model_link("vans-old-skool"),
             model_link("converse-chuck-70"),
             model_link("birkenstock-boston"),
+            ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP"),
+        ],
+        "note": "브랜드 공식표는 바뀔 수 있으니, 구매 전 상품 페이지의 사이즈 표기를 한 번 더 확인하시기 바랍니다.",
+    },
+    {
+        "slug": "uk-size-chart",
+        "name": "영국 신발 사이즈표",
+        "title": "영국 신발 사이즈표 — UK 7·8은 몇 mm? 브랜드별 공식표 비교",
+        "desc": f"UK 8은 {uk_mm('8')}입니다. 같은 UK 숫자도 브랜드마다 5mm 다릅니다. "
+                "5개 브랜드 공식 사이즈표로 UK와 mm를 양쪽으로 찾고, 여성 전용 상품과 닥터마틴 사이즈도 정리했습니다.",
+        "eyebrow": "UK · KR 표기 · 5개 브랜드 공식표",
+        "h1": "같은 UK 8도 <em>5mm 차이가 납니다</em>",
+        "verdict_top": "핵심",
+        "verdict": f"UK 8 = {uk_mm('8', BRANDS[:2])}",
+        "verdict_sub": "UK 숫자도 브랜드 공식표마다 다른 길이에 붙습니다. UK 6.5 이상에서는 반스가 나이키와 같고, "
+                       "뉴발란스·컨버스는 아디다스와 같습니다.",
+        "tables": [
+            {
+                "h2": "UK 숫자로 mm 찾기",
+                "intro": "영국 사이트나 신발 태그에 UK 사이즈만 보일 때, 브랜드 칸에서 mm를 확인하세요.",
+                "caption": "남성·남녀공용 공식표에 정확히 그 UK 숫자가 있는 경우만 적었습니다. "
+                           "나이키 공식표는 UK 6을 245mm와 250mm 두 줄에 붙입니다.",
+                "head": ["UK", "나이키", "아디다스", "뉴발란스", "반스", "컨버스"],
+                "rows": to_mm("", [num(x / 2) for x in range(6, 23)], [(m, 2) for _, m in BRANDS]),
+                "highlight": 0,
+            },
+            {
+                "h2": "mm로 UK 찾기",
+                "intro": "평소 mm를 알고 있을 때, 브랜드마다 어떤 UK 숫자를 골라야 하는지입니다.",
+                "caption": "남성·남녀공용 공식표 기준입니다. 한 칸에 두 값이 있으면 공식표에 두 줄로 나오는 사이즈입니다.",
+                "head": ["KR 표기", "나이키", "아디다스", "뉴발란스", "반스", "컨버스"],
+                "rows": by_mm(2, range(225, 305, 5)),
+                "highlight": 0,
+            },
+            {
+                "h2": "여성 전용 상품은 UK가 작게 붙습니다",
+                "intro": "여성 전용으로 나온 상품은 여성 사이즈표를 씁니다. 같은 mm라도 UK 숫자가 남녀공용 상품보다 작을 수 있습니다.",
+                "caption": "나이키 코리아 여성 신발 사이즈 차트, 뉴발란스 공식 사이즈 가이드 여성 표, 두 브랜드 남성표의 값입니다.",
+                "head": ["KR 표기", "나이키 여성 전용", "뉴발란스 여성 전용", "나이키 남녀공용", "뉴발란스 남녀공용"],
+                "rows": [[f"{mm}mm", num(NIKE_W[mm][2]), num(NB_W[mm][2]),
+                          num(NIKE_MAP.get(mm, ("—",) * 4)[2]), num(NB_MAP[mm][2])] for mm in range(220, 275, 5)],
+                "highlight": 0,
+            },
+        ],
+        "body": [
+            ("같은 UK 숫자가 브랜드마다 다른 길이입니다",
+             f"UK 8은 {uk_mm('8')}입니다. UK 6.5 이상에서는 이렇게 두 무리로 갈리고, 나이키·반스 쪽이 같은 UK에서 5mm 깁니다. "
+             "그래서 아디다스를 UK 8로 신던 사람이 나이키를 UK 8로 사면 반 사이즈 크게 받습니다. "
+             "UK 6 이하에서는 브랜드마다 더 갈리니 표에서 브랜드 칸을 확인하세요."),
+            ("US에서 UK로 바꿀 때 빼는 숫자도 다릅니다",
+             "US 남성에서 아디다스·뉴발란스는 0.5를 빼면 UK이고, 반스와 아식스는 1을 뺍니다. 나이키는 250mm 이상에서 1, "
+             "245mm 이하에서 0.5를 빼고, 컨버스는 US 남성과 UK가 같은 숫자입니다. "
+             "그래서 270mm가 나이키·반스에서는 US 9 = UK 8, 아디다스·뉴발란스에서는 US 9 = UK 8.5, 컨버스에서는 US 8.5 = UK 8.5입니다."),
+            ("남녀공용 상품은 UK 숫자가 하나입니다",
+             "US는 같은 신발에 남성 숫자와 여성 숫자를 따로 붙이지만, 남녀공용 상품의 UK는 숫자가 하나입니다. "
+             "남녀공용 상품이라면 남녀 상관없이 같은 UK 표를 보면 됩니다. 다만 여성 전용으로 나온 상품은 여성 사이즈표를 따로 써서, "
+             "뉴발란스는 모든 사이즈에서, 나이키는 250mm 이상에서 같은 mm에 UK를 0.5 작게 붙입니다. "
+             f"250mm가 나이키 남녀공용 상품에서는 UK {num(NIKE_MAP[250][2])}, 여성 전용 상품에서는 UK {num(NIKE_W[250][2])}입니다."),
+            ("닥터마틴은 UK 정수 사이즈만 있습니다",
+             "닥터마틴처럼 UK 사이즈로 파는 브랜드도 있습니다. 닥터마틴 1460은 반 사이즈 없이 UK 7, 8, 9처럼 정수 사이즈만 나오고, "
+             "닥터마틴 코리아 표기로 UK 7 = 260mm, UK 8 = 270mm, UK 9 = 280mm라 나이키와 같은 줄입니다. "
+             "다만 크게 나와서 운동화보다 반 사이즈 작게 고르는 것이 기준입니다. 자세한 내용은 "
+             "<a href=\"/dr-martens-1460/\">닥터마틴 1460 사이즈</a>에 정리했습니다."),
+            ("영국 사이트에서 살 때는 cm 표기를 맞추세요",
+             "UK 숫자는 브랜드마다 뜻이 달라서, 평소 mm를 UK로 바꿔 주문하면 반 사이즈씩 어긋나기 쉽습니다. "
+             "사이즈 선택지나 상품 태그에 cm(JP) 값이 함께 있으면 그 값을 평소 mm와 맞추세요. "
+             "US·EU 비교는 <a href=\"/us-size-chart/\">미국 신발 사이즈표</a>와 <a href=\"/eu-size-chart/\">유럽 신발 사이즈표</a>에 있습니다."),
+        ],
+        "sources": CHART_SOURCES + ["닥터마틴 코리아 UK·mm 표기"],
+        "faq": [
+            ("UK 8은 몇 mm인가요?", f"남녀공용 공식표 기준으로 {uk_mm('8')}입니다."),
+            ("UK 7은 몇 mm인가요?", f"남녀공용 공식표 기준으로 {uk_mm('7')}입니다."),
+            ("UK 6은 몇 mm인가요?",
+             f"{uk_mm('6')}입니다. 나이키 공식표는 US 남성 6.5와 7에 모두 UK 6을 붙여, 245mm와 250mm가 둘 다 UK 6입니다."),
+            ("UK 5는 몇 mm인가요?",
+             f"남녀공용 상품은 {uk_mm('5')}입니다. 여성 전용 상품은 {uk_mm('5', W_BRANDS)}입니다."),
+            ("270mm는 UK로 몇인가요?", f"{mm_uk(270)}입니다. 여성 전용 상품이면 {mm_uk(270, W_BRANDS)}입니다."),
+            ("UK와 US는 얼마나 차이 나나요?",
+             "US 남성에서 아디다스·뉴발란스는 0.5, 반스·아식스는 1을 빼면 UK입니다. 나이키는 250mm 이상에서 1, "
+             "245mm 이하에서 0.5를 빼고, 컨버스는 US 남성과 UK가 같습니다."),
+        ],
+        "related_h2": "함께 보면 좋은 페이지",
+        "related": [
+            ("/us-size-chart/", "미국 신발 사이즈표", "US 9가 모두 270mm는 아닙니다"),
+            ("/eu-size-chart/", "유럽 신발 사이즈표", "EU 38·42는 몇 mm?"),
+            model_link("dr-martens-1460"),
+            model_link("adidas-samba"),
+            model_link("nike-air-force-1"),
+            ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
             ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP"),
         ],
         "note": "브랜드 공식표는 바뀔 수 있으니, 구매 전 상품 페이지의 사이즈 표기를 한 번 더 확인하시기 바랍니다.",
@@ -642,7 +761,8 @@ PAGES = [
             ("환산표도 브랜드 공식표를 씁니다",
              "US·UK·EU 숫자는 브랜드마다 다릅니다. 나이키·아디다스·뉴발란스·반스·컨버스·아식스·오니츠카 타이거 모델은 각 브랜드 공식 사이즈표의 값을 쓰고, "
              "공식표를 아직 대조하지 못한 브랜드는 표 아래에 일반 환산표라고 적습니다. 브랜드끼리의 차이는 "
-             "<a href=\"/us-size-chart/\">미국 신발 사이즈표</a>와 <a href=\"/eu-size-chart/\">유럽 신발 사이즈표</a>에 모았습니다."),
+             "<a href=\"/us-size-chart/\">미국 신발 사이즈표</a>, <a href=\"/uk-size-chart/\">영국 신발 사이즈표</a>, "
+             "<a href=\"/eu-size-chart/\">유럽 신발 사이즈표</a>에 모았습니다."),
             ("정보는 계속 고칩니다",
              "브랜드가 사이즈표를 바꾸거나 새 근거가 나오면 수정합니다. 2026년 9월에는 컨버스 척 70의 결론을 공식 차트 기준으로 바꾸고, "
              "모델 페이지의 US·UK·EU 환산을 브랜드 공식표로 교체했습니다."),
@@ -669,6 +789,7 @@ PAGES = [
         "related": [
             ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP"),
             ("/us-size-chart/", "미국 신발 사이즈표", "브랜드별 US 비교"),
+            ("/uk-size-chart/", "영국 신발 사이즈표", "브랜드별 UK 비교"),
             ("/eu-size-chart/", "유럽 신발 사이즈표", "브랜드별 EU 비교"),
             ("/privacy/", "개인정보처리방침", "쿠키와 광고"),
         ],
@@ -1087,6 +1208,26 @@ if __name__ == "__main__":
     assert ADIDAS_MAP[270] == (9, 10, 8.5, "42⅔") and ADIDAS_MAP[265][3] == 42 and ADIDAS_MAP[240][:2] == (6, 7)
     assert NB_MAP[270] == (9, 10.5, 8.5, 42.5) and VANS_MAP[270] == (9, 10.5, 8, 42) and VANS_MAP[240][1] == 7.5
     assert CONVERSE_MAP[270] == (8.5, 10.5, 8.5, 42) and CONVERSE_MAP[275][0] == 9
+    # 영국 사이즈표 문구: UK 6.5 이상에서 나이키=반스, 아디다스=뉴발란스=컨버스이고 나이키 쪽이 5mm 길다.
+    for s in [num(x / 2) for x in range(13, 23)]:
+        n, a = hits(NIKE_MAP, 2, s), hits(ADIDAS_MAP, 2, s)
+        assert n == hits(VANS_MAP, 2, s) and a == hits(NB_MAP, 2, s) == hits(CONVERSE_MAP, 2, s) and n[0] == a[0] + 5, s
+    assert hits(NIKE_MAP, 2, "6") == [245, 250] != hits(VANS_MAP, 2, "6")
+
+    def us_uk_gap(chart, mms=range(999)):
+        """US 남성 - UK. 공식표 두 줄('4.5·5')은 줄끼리 짝지어 뺀다."""
+        return {float(u) - float(k) for mm, v in chart.items() if mm in mms and "—" not in (v[0], v[2])
+                for u, k in zip(num(v[0]).split("·"), num(v[2]).split("·"))}
+    assert us_uk_gap(ADIDAS_MAP) == us_uk_gap(NB_MAP) == {0.5} and us_uk_gap(VANS_MAP) == us_uk_gap(ASICS_MAP) == {1}
+    assert us_uk_gap(CONVERSE_MAP) == {0} and us_uk_gap(NIKE_MAP, range(250, 999)) == {1}
+    assert us_uk_gap(NIKE_MAP, range(250)) == {0.5}
+    assert (NIKE_MAP[245][0], NIKE_MAP[250][0]) == (6.5, 7)
+    # 여성 전용 UK: 뉴발란스는 전부, 나이키는 250mm 이상에서 남녀공용보다 0.5 작다.
+    assert all(NB_W[mm][2] == NB_MAP[mm][2] - 0.5 for mm in NB_W)
+    assert all(NIKE_W[mm][2] == NIKE_MAP[mm][2] - 0.5 for mm in range(250, 275, 5))
+    # 닥터마틴 문단: 1460 페이지의 공식 환산이 나이키 줄과 같다.
+    dm = " ".join(t for _, t in by["dr-martens-1460"]["body"])
+    assert all(f"UK {u} = {mm}mm" in dm and hits(NIKE_MAP, 2, str(u)) == [mm] for u, mm in [(7, 260), (8, 270), (9, 280)])
     for s, word in {"nike-v2k-run": "다운", "nike-air-max-97": "업", "nike-air-max-95": "업", "nike-air-force-1": "정사이즈",
                     "nike-dunk-low": "정사이즈", "nike-air-jordan-1": "정사이즈", "adidas-samba": "정사이즈",
                     "adidas-stan-smith": "정사이즈", "adidas-gazelle": "업", "adidas-handball-spezial": "업",
