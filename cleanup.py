@@ -19,6 +19,7 @@ EXTRA = [
     ("/clothing-size-women/", "여성 의류 사이즈", "44·55·66 알아보기"),
     ("/us-size-chart/", "미국 신발 사이즈표", "브랜드별 US 비교"),
     ("/uk-size-chart/", "영국 신발 사이즈표", "브랜드별 UK 비교"),
+    ("/womens-size/", "우먼스 사이즈", "남자가 W 상품을 살 때"),
     ("/eu-size-chart/", "유럽 신발 사이즈표", "브랜드별 EU 비교"),
     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
     ("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
