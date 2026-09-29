@@ -110,6 +110,11 @@ PAGES = [
         ],
         "related": [
             ("/clothing-size-women/", "여성 의류 사이즈", "44·55·66이 표준이 아닌 이유"),
+            ("/northface-nuptse/", "눕시 사이즈", "095는 옷 가슴둘레 115.6cm"),
+            ("/moncler-size-chart/", "몽클레어 사이즈표", "0·1·2·3은 한국 몇?"),
+            ("/arcteryx-size-chart/", "아크테릭스 사이즈표", "M은 가슴둘레 102cm"),
+            ("/japan-size-chart/", "일본 사이즈표", "LL은 XL, O는 XL"),
+            ("/china-size-chart/", "중국 사이즈표", "175/92A 읽는 법"),
             ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP"),
         ],
     },
@@ -175,6 +180,11 @@ PAGES = [
         ],
         "related": [
             ("/clothing-size-men/", "남성 의류 사이즈", "숫자가 곧 가슴둘레 cm"),
+            ("/northface-nuptse/", "눕시 사이즈", "095는 옷 가슴둘레 115.6cm"),
+            ("/moncler-size-chart/", "몽클레어 사이즈표", "0·1·2·3은 한국 몇?"),
+            ("/arcteryx-size-chart/", "아크테릭스 사이즈표", "M은 가슴둘레 102cm"),
+            ("/japan-size-chart/", "일본 사이즈표", "LL은 XL, O는 XL"),
+            ("/china-size-chart/", "중국 사이즈표", "175/92A 읽는 법"),
             ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP"),
         ],
     },
