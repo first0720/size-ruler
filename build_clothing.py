@@ -111,6 +111,8 @@ PAGES = [
         "related": [
             ("/clothing-size-women/", "여성 의류 사이즈", "44·55·66이 표준이 아닌 이유"),
             ("/hat-size/", "모자 사이즈", "57은 머리둘레 57cm"),
+            ("/polo-ralph-lauren-size/", "폴로 사이즈", "M은 100, 보이즈 XL은 키 163~174"),
+            ("/thom-browne-size-chart/", "톰브라운 사이즈표", "1은 95, 2는 100"),
             ("/northface-nuptse/", "눕시 사이즈", "095는 옷 가슴둘레 115.6cm"),
             ("/moncler-size-chart/", "몽클레어 사이즈표", "0·1·2·3은 한국 몇?"),
             ("/arcteryx-size-chart/", "아크테릭스 사이즈표", "M은 가슴둘레 102cm"),
@@ -186,6 +188,7 @@ PAGES = [
             ("/clothing-size-men/", "남성 의류 사이즈", "숫자가 곧 가슴둘레 cm"),
             ("/pants-size-women/", "여자 바지 사이즈", "26은 허리 66~67cm"),
             ("/bra-size/", "브라 사이즈", "75B는 차이 12.5cm"),
+            ("/thom-browne-size-chart/", "톰브라운 사이즈표", "여성 40은 55"),
             ("/northface-nuptse/", "눕시 사이즈", "095는 옷 가슴둘레 115.6cm"),
             ("/moncler-size-chart/", "몽클레어 사이즈표", "0·1·2·3은 한국 몇?"),
             ("/arcteryx-size-chart/", "아크테릭스 사이즈표", "M은 가슴둘레 102cm"),

@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>브라 사이즈 재는 법과 계산 — 75B 뜻, 해외 사이즈 변환</title>
-<meta name="description" content="브라 사이즈 75B는 밑가슴 75cm에 윗가슴이 12.5cm 큰 사이즈입니다. 비비안 공식 사이즈표로 컵 계산법과 재는 법을, 트라이엄프 공식 표로 미국·영국 사이즈 변환을 정리했습니다.">
+<title>브라 사이즈 계산기 — 재는 법, 75B 뜻, 해외 사이즈 변환</title>
+<meta name="description" content="브라 사이즈 계산기: 밑가슴과 윗가슴을 넣으면 비비안 공식표 기준 사이즈와 영국·미국 밴드가 나옵니다. 75B는 밑가슴 75cm에 윗가슴이 12.5cm 큰 사이즈입니다. 재는 법과 해외 표기도 정리했습니다.">
 <link rel="canonical" href="https://sizeruler.com/bra-size/">
-<meta property="og:title" content="브라 사이즈 재는 법과 계산 — 75B 뜻, 해외 사이즈 변환">
-<meta property="og:description" content="브라 사이즈 75B는 밑가슴 75cm에 윗가슴이 12.5cm 큰 사이즈입니다. 비비안 공식 사이즈표로 컵 계산법과 재는 법을, 트라이엄프 공식 표로 미국·영국 사이즈 변환을 정리했습니다.">
+<meta property="og:title" content="브라 사이즈 계산기 — 재는 법, 75B 뜻, 해외 사이즈 변환">
+<meta property="og:description" content="브라 사이즈 계산기: 밑가슴과 윗가슴을 넣으면 비비안 공식표 기준 사이즈와 영국·미국 밴드가 나옵니다. 75B는 밑가슴 75cm에 윗가슴이 12.5cm 큰 사이즈입니다. 재는 법과 해외 표기도 정리했습니다.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://sizeruler.com/bra-size/">
 <meta property="og:image" content="https://sizeruler.com/og-image.png">
@@ -136,6 +136,23 @@
     </div>
   </section>
 
+  <section id="braTool" hidden>
+    <h2>브라 사이즈 계산기</h2>
+    <p>줄자로 잰 밑가슴과 윗가슴을 넣으세요. 이 페이지의 비비안·트라이엄프 공식표로 계산합니다.</p>
+    <div class="entry">
+      <label for="braUnder">밑가슴(cm)</label>
+      <input id="braUnder" type="number" inputmode="decimal" min="60" max="100" step="any" placeholder="75">
+    </div>
+    <div class="entry">
+      <label for="braOver">윗가슴(cm)</label>
+      <input id="braOver" type="number" inputmode="decimal" min="65" max="130" step="any" placeholder="87.5">
+    </div>
+    <div aria-live="polite">
+      <p class="ring-out" id="braOut"></p>
+      <p id="braWhy"></p>
+    </div>
+  </section>
+
   </div>
 
   <section>
@@ -230,6 +247,33 @@
   <p class="disclaimer">근거: 비비안 공식 속옷가이드 — 사이즈 측정법, 브래지어 사이즈표(밑가슴 70~90·윗가슴 77.5~115cm) · 트라이엄프 공식 사이즈 차트 — 밑가슴 cm별 EU·영국·미국·프랑스 밴드, 컵 표기, 밴드별 컵 윗가슴. 브랜드와 제품 라인마다 컵 기준이 다를 수 있으니, 구매 전 해당 브랜드의 사이즈표를 확인하시기 바랍니다.</p>
   <p class="disclaimer"><a href="/about/">사이트 소개</a> · <a href="/privacy/">개인정보처리방침</a></p>
 </footer>
+<script>
+(function(){
+  var tool=document.getElementById("braTool");
+  if(!tool) return;
+  tool.hidden=false;
+  var B=[[68, 72, 70, 32, 85], [73, 77, 75, 34, 90], [78, 82, 80, 36, 95], [83, 87, 85, 38, 100], [88, 92, 90, 40, 105]], C=[["AA", 7.5], ["A", 10], ["B", 12.5], ["C", 15], ["D", 17.5], ["E", 20], ["F", 22.5], ["G", 25]];
+  var under=document.getElementById("braUnder"), over=document.getElementById("braOver");
+  var out=document.getElementById("braOut"), why=document.getElementById("braWhy");
+  function fmt(x){ return String(Math.round(x*10)/10); }
+  function show(){
+    var u=parseFloat(under.value), o=parseFloat(over.value), b=null, r=Math.round(u);
+    out.textContent=""; why.textContent="";
+    if(!(u>0)||!(o>0)) return;
+    B.forEach(function(x){ if(r>=x[0]&&r<=x[1]) b=x; });
+    if(!b){ why.textContent="밑가슴 "+B[0][0]+"~"+B[B.length-1][1]+"cm만 계산합니다(비비안 공식표 밴드 70~90)."; return; }
+    var d=Math.round((o-u)*10)/10, k=Math.round((d-C[0][1])/2.5);
+    if(k<0||k>=C.length){ why.textContent="윗가슴 − 밑가슴 "+fmt(d)+"cm는 비비안 공식표 범위("+C[0][1]+"~"+C[C.length-1][1]+"cm) 밖입니다."; return; }
+    var c=C[k];
+    out.textContent=b[2]+c[0];
+    why.textContent="밴드 "+b[2]+": 트라이엄프 공식표에서 밑가슴 "+b[0]+"~"+b[1]+"cm가 "+b[2]+"입니다"+(r!==u?"("+fmt(u)+"cm는 반올림해 "+r+"cm)":"")+". "
+      +"컵 "+c[0]+": 차이 "+fmt(d)+"cm"+(d===c[1]?"로 비비안 공식표 그대로입니다. ":"가 비비안 공식표의 "+fmt(c[1])+"cm에 가장 가깝습니다. ")
+      +"해외 밴드는 영국·미국 "+b[3]+", 프랑스 "+b[4]+"입니다. 해외 컵은 브랜드마다 기준이 달라, 윗가슴 cm로 그 브랜드 표에서 다시 고르세요.";
+  }
+  under.addEventListener("input",show);
+  over.addEventListener("input",show);
+})();
+</script>
 
 </body>
 </html>
