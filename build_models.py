@@ -3469,8 +3469,8 @@ def lab_table(m):
         if pair:
             d = round(pair[0] - pair[1], 1)
             diff = "0" if d == 0 else f"{d:+.1f}".replace("-", "−")
-            rows += (f'<tr><th scope="row">{label}</th><td>{num(pair[0])}mm</td>'
-                     f'<td>{num(pair[1])}mm</td><td>{diff}</td></tr>\n          ')
+            rows += (f'<tr><th scope="row">{label}</th><td>{pair[0]:.1f}mm</td>'
+                     f'<td>{pair[1]:.1f}mm</td><td>{diff}</td></tr>\n          ')
     return f"""
     <h3>실측으로 본 폭</h3>
     <div class="scroller">

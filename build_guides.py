@@ -13,9 +13,10 @@
 """
 import json
 import os
+import re
 from fractions import Fraction
 
-from build_models import (NAV, stamp, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
+from build_models import (NAV, stamp, RR_LAB, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
                           REEBOK_MAP, ON_MAP, UGG_MAP, BIRKENSTOCK_MAP, TIMBERLAND_MAP, CROCS_MAP, DRM_MAP,
                           MIZUNO_MAP, MIZUNO_WIDTH,
                           _ASICS_US, _ASICS_UK, _ASICS_EU, _ASICS_CM,
@@ -106,6 +107,33 @@ def models_of(brand):
 
 def link(m):
     return f'<a href="/{m["slug"]}/">{m["name"]}</a>'
+
+
+# RunRepeat가 같은 방법으로 잰 비교 무리. 이 무리의 모델끼리만 실측 순위를 매긴다.
+LAB_SETS = (("스니커즈", 96), ("러닝화", 356))
+
+
+def lab_rank_table(widest, n=15):
+    """RunRepeat 실측 '가장 넓은 곳' 순위표(넓은 순 또는 좁은 순). 괄호는 같은 무리 평균과의 차이."""
+    by_slug = {m["slug"]: m for m in MODELS}
+    labs = sorted(((by_slug[s], v) for s, v in RR_LAB.items() if v[1:3] in LAB_SETS),
+                  key=lambda x: x[1][3][0], reverse=widest)[:n]
+    skipped = [by_slug[s]["name"] for s, v in RR_LAB.items() if v[1:3] not in LAB_SETS]
+
+    def cell(pair):
+        d = round(pair[0] - pair[1], 1)
+        return f"{pair[0]:.1f} ({'0' if d == 0 else f'{d:+.1f}'.replace('-', '−')})"
+
+    avg = {v[1:3]: (v[3][1], v[4][1]) for v in RR_LAB.values() if v[1:3] in LAB_SETS}
+    sets = ", ".join(f"{g} {k}켤레 평균(가장 넓은 곳 {a[0]:.1f}mm·앞코 폭 {a[1]:.1f}mm)" for (g, k), a in avg.items())
+    word = "넓은" if widest else "좁은"
+    return {"h2": f"실측으로 폭이 {word} 모델",
+            "intro": f"RunRepeat 연구실이 잰 가장 넓은 곳(발볼 부분)이 {word} 순서로 {n}개입니다. "
+                     "모델을 누르면 실측표와 발볼별 가이드를 볼 수 있습니다.",
+            "caption": f"단위는 mm, 괄호는 같은 무리 평균과의 차이입니다. 비교: {sets}."
+                       + (f" 비교 무리가 다른 모델({'·'.join(skipped)})은 뺐습니다." if skipped else ""),
+            "head": ["모델", "가장 넓은 곳(mm)", "앞코 폭(mm)"],
+            "rows": [[link(m), cell(v[3]), cell(v[4])] for m, v in labs], "highlight": 0}
 
 
 def hub_sub(brand):
@@ -218,7 +246,7 @@ def wide_page():
                        "모두 평소 신는 사이즈 기준이며, 길이를 올리기 전에 폭 옵션이 있는지 먼저 확인하세요.",
         "tables": [{"h2": h, "intro": i, "caption": "모두 평소 신는 사이즈 기준입니다. 근거는 모델 페이지에 있습니다.",
                     "head": ["모델", "발볼 넓을 때"], "rows": rows, "highlight": 0}
-                   for (h, i), rows in zip(WIDE_GROUPS, groups)],
+                   for (h, i), rows in zip(WIDE_GROUPS, groups)] + [lab_rank_table(True)],
         "body": [
             ("길이를 올리기 전에 폭 옵션부터",
              "발볼 때문에 반 사이즈(5mm) 올리면 폭은 1~2mm 늘어나는 데 그치고 길이만 5mm 남습니다. "
@@ -236,7 +264,8 @@ def wide_page():
              "각 모델의 권장은 브랜드 공식 안내, KREAM 사이즈 팁, 착용 후기를 모은 경향입니다. "
              "발 모양에 따라 결과가 다를 수 있으니 모델 페이지의 근거와 발볼별 가이드를 함께 보세요."),
         ],
-        "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)", "뉴발란스 폭별 발 너비 차트"],
+        "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)", "뉴발란스 폭별 발 너비 차트",
+                    "RunRepeat 연구실 실측(가장 넓은 곳·앞코 폭, 모델 페이지 실측표와 같은 값)"],
         "faq": [
             ("발볼 넓은 사람에게 맞는 운동화는 어떤 건가요?",
              f"발볼이 넓어도 평소 사이즈보다 크게 신지 않는 모델은 뉴발란스 530, 리복 클럽 C 85, 컨버스 잭퍼셀, 아디다스 캠퍼스 00s 등 {n0}개입니다. "
@@ -1101,7 +1130,7 @@ def narrow_page():
                        "모두 평소 신는 사이즈 기준이며, 사이즈를 내리기 전에 끈을 발등까지 조여 헐거움을 먼저 잡아 보세요.",
         "tables": [{"h2": h, "intro": i, "caption": "모두 평소 신는 사이즈 기준입니다. 근거는 모델 페이지에 있습니다.",
                     "head": ["모델", "칼발일 때"], "rows": rows, "highlight": 0}
-                   for (h, i), rows in zip(NARROW_GROUPS, groups)],
+                   for (h, i), rows in zip(NARROW_GROUPS, groups)] + [lab_rank_table(False)],
         "body": [
             ("내리기 전에 끈으로 먼저 잡으세요",
              "칼발은 길이가 맞아도 좌우가 남아 헐겁게 느껴집니다. 이때 사이즈를 내리면 길이도 5mm 줄어 발가락이 닿을 수 있으니, "
@@ -1120,7 +1149,8 @@ def narrow_page():
              "각 모델의 권장은 브랜드 공식 안내, KREAM 사이즈 팁, 착용 후기를 모은 경향입니다. "
              "발 모양에 따라 결과가 다를 수 있으니 모델 페이지의 근거와 발볼별 가이드를 함께 보세요."),
         ],
-        "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)"],
+        "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)",
+                    "RunRepeat 연구실 실측(가장 넓은 곳·앞코 폭, 모델 페이지 실측표와 같은 값)"],
         "faq": [
             ("칼발은 반 사이즈 다운해야 하나요?",
              f"아닙니다. 모델 {total}개 중 {n3}개는 칼발도 평소 사이즈 그대로입니다. "
@@ -2752,7 +2782,8 @@ def build(p):
                     cells += f"<td>{v}</td>"
             rows += f"<tr>{cells}</tr>\n          "
         # 칸에 문장이 들어가는 표는 줄바꿈을 허용한다 (표시만 바뀜)
-        tcls = "pick-table is-text" if any(len(str(v)) > 14 for r in t["rows"] for v in r) else "pick-table"
+        # 링크 태그 길이는 빼고 보이는 글자로 잰다
+        tcls = "pick-table is-text" if any(len(re.sub(r"<[^>]+>", "", str(v))) > 14 for r in t["rows"] for v in r) else "pick-table"
         sections.append(f"""
   <section>
     <h2>{t['h2']}</h2>
@@ -3065,6 +3096,11 @@ if __name__ == "__main__":
     assert {m["slug"]: m["offset"] for m in models_of("푸마")} == {"puma-suede": 0, "puma-speedcat": 5, "puma-palermo": 0}
     assert all(m["offset"] == 0 for b in ("살로몬", "리복", "온", "어그", "버켄스탁", "크록스", "닥터마틴") for m in models_of(b))
     assert [m["offset"] for m in models_of("팀버랜드")] == [-5]
+    # 실측 순위: 넓은 순·좁은 순으로 정렬되고, 비교 무리가 다른 젤카야노 14는 빠진다
+    for widest in (True, False):
+        mm = [float(r[1].split(" ")[0]) for r in lab_rank_table(widest)["rows"]]
+        assert mm == sorted(mm, reverse=widest) and len(mm) == 15
+        assert "젤카야노" not in str(lab_rank_table(widest)["rows"])
     for p in PAGES:
         os.makedirs(p["slug"], exist_ok=True)
         path = os.path.join(p["slug"], "index.html")
