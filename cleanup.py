@@ -75,14 +75,14 @@ def build_404(models):
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=4">
+<link rel="stylesheet" href="/style.css?v=5">
 </head>
 <body class="error">
 
 <header class="masthead">
   <div class="wrap mark">
     <b><a href="/" style="text-decoration:none;color:inherit">사이즈 자</a></b>
-    <span>404</span>
+    <nav class="gnb" aria-label="주요 메뉴"><a href="/">신발</a><a href="/#brands">브랜드</a><a href="/#clothing">의류</a><a href="/ring-size/">반지</a></nav>
   </div>
 </header>
 

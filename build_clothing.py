@@ -10,7 +10,7 @@
 import json
 import os
 
-from build_models import keep_phrases
+from build_models import NAV, keep_phrases, stamp
 
 PAGES = [
     {
@@ -292,7 +292,7 @@ def build(p):
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-<link rel="stylesheet" href="/style.css?v=4">
+<link rel="stylesheet" href="/style.css?v=5">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8018650083353602" crossorigin="anonymous"></script>
 
 <script type="application/ld+json">
@@ -307,7 +307,7 @@ def build(p):
 <header class="masthead">
   <div class="wrap mark">
     <b><a href="/" style="text-decoration:none;color:inherit">사이즈 자</a></b>
-    <span>{p['name']}</span>
+    {NAV}
   </div>
 </header>
 
@@ -354,7 +354,7 @@ def build(p):
 <footer class="wrap">
   <div>사이즈 자 — {p['name']}</div>
   <p class="disclaimer">근거: {srcs}. 의류 치수는 브랜드와 핏에 따라 편차가 크므로, 구매 전 상품 페이지의 실측 정보를 반드시 확인하시기 바랍니다.</p>
-  <p class="disclaimer"><a href="/about/">사이트 소개</a> · <a href="/privacy/">개인정보처리방침</a></p>
+  <p class="disclaimer">최종 수정 __UPDATED__ · <a href="/about/">사이트 소개</a> · <a href="/privacy/">개인정보처리방침</a></p>
 </footer>
 
 </body>
@@ -367,7 +367,7 @@ if __name__ == "__main__":
         os.makedirs(p["slug"], exist_ok=True)
         path = os.path.join(p["slug"], "index.html")
         with open(path, "w", encoding="utf-8") as f:
-            f.write(build(p))
+            f.write(stamp(path, build(p)))
         print("wrote", path)
     print()
     print("사이트맵을 갱신하려면: python3 build_sitemap.py")

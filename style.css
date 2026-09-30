@@ -83,7 +83,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
     linear-gradient(to right,var(--ink) 0 1px,transparent 1px) 0 0/8px 4px repeat-x,
     linear-gradient(to right,var(--ink) 0 1px,transparent 1px) 0 0/40px 7px repeat-x;
 }
-.mark{display:flex;align-items:center;gap:8px 16px;min-height:60px;padding-block:10px}
+.mark{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-height:60px;padding-block:10px}
 .mark b{display:inline-flex;align-items:center;gap:10px;flex:none;font-size:17px;font-weight:800;letter-spacing:-.02em}
 .mark b::before,footer>div::before{
   content:"";flex:none;width:22px;height:22px;
@@ -96,7 +96,10 @@ a:focus-visible,button:focus-visible,input:focus-visible,summary:focus-visible{
     var(--tape);
   background-repeat:no-repeat;
 }
-.mark span{margin-left:auto;text-align:right;font-family:var(--num);font-size:15px;font-weight:500;color:var(--muted);letter-spacing:.02em}
+.gnb{margin-left:auto;display:flex;gap:14px}
+.gnb a{padding-block:8px;font-size:15px;font-weight:600;color:var(--muted);text-decoration:none}
+.gnb a:hover{color:var(--ink)}
+@media (max-width:360px){.gnb{gap:10px}.gnb a{font-size:14px}}
 
 /* ---- 제목 ---- */
 main{display:block;padding-bottom:24px}
