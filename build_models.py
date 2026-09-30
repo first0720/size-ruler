@@ -3273,6 +3273,53 @@ BRAND_LABEL = {"온": "온러닝", "오니츠카": "오니츠카 타이거"}
 # slug -> (상품, 무신사 상품번호, 후기 수, 사이즈 [매우 작아요, 조금 작아요, 정사이즈예요, 조금 커요, 많이 커요] %,
 #          발볼 넓이 [매우 넓어요, 조금 넓어요, 적당해요, 조금 좁아요, 매우 좁아요] %)
 # 판매하지 않는 모델, 평가 칸이 없는 옛 후기 상품(가젤·스탠스미스·스웨이드), 평가 틀이 두 벌인 카야노 14는 뺐다.
+# RunRepeat 연구실 실측(2026-10-01): 모델 -> (RunRepeat 주소, 비교 무리, 켤레 수,
+#   (가장 넓은 곳, 평균), (앞코 폭, 평균), (앞코 높이, 평균) mm). 없는 항목은 None
+RR_LAB = {
+    "adidas-samba": ("adidas-samba-og", "스니커즈", 96, (91.2, 92.4), (66.1, 68.7), (26.4, 27.7)),
+    "adidas-gazelle": ("adidas-gazelle", "스니커즈", 96, (91.0, 92.4), (68.9, 68.7), (25.0, 27.7)),
+    "nike-air-force-1": ("nike-air-force-1-07", "스니커즈", 96, (91.3, 92.4), (70.4, 68.7), (26.5, 27.7)),
+    "newbalance-530": ("new-balance-530", "스니커즈", 96, (94.6, 92.4), (69.3, 68.7), (30.6, 27.7)),
+    "vans-old-skool": ("vans-old-skool", "스니커즈", 96, (94.4, 92.4), (68.7, 68.7), (24.1, 27.7)),
+    "nike-dunk-low": ("nike-dunk-low", "스니커즈", 96, (94.0, 92.4), (70.5, 68.7), (26.0, 27.7)),
+    "newbalance-993": ("new-balance-made-in-us-993", "스니커즈", 96, (94.3, 92.4), (69.1, 68.7), (28.3, 27.7)),
+    "adidas-superstar": ("adidas-superstar", "스니커즈", 96, (91.3, 92.4), (66.5, 68.7), (23.5, 27.7)),
+    "asics-gel-kayano-14": ("asics-gel-kayano-14", "스니커즈", 73, (100.3, 99.1), (78.5, 75.3), None),
+    "adidas-stan-smith": ("adidas-stan-smith", "스니커즈", 96, (89.8, 92.4), (65.6, 68.7), (27.6, 27.7)),
+    "adidas-campus-00s": ("adidas-campus-00s", "스니커즈", 96, (95.5, 92.4), (68.6, 68.7), (24.2, 27.7)),
+    "newbalance-2002r": ("new-balance-2002r", "스니커즈", 96, (93.4, 92.4), (67.2, 68.7), (27.5, 27.7)),
+    "newbalance-327": ("new-balance-327", "스니커즈", 96, (92.1, 92.4), (69.0, 68.7), (30.4, 27.7)),
+    "newbalance-990v6": ("new-balance-990-v6", "스니커즈", 96, (94.1, 92.4), (67.3, 68.7), (31.2, 27.7)),
+    "newbalance-574": ("new-balance-574", "스니커즈", 96, (88.7, 92.4), (74.1, 68.7), (25.4, 27.7)),
+    "nike-air-max-90": ("nike-air-max-90", "스니커즈", 96, (90.7, 92.4), (70.4, 68.7), (27.1, 27.7)),
+    "nike-air-max-95": ("nike-air-max-95", "스니커즈", 96, (88.2, 92.4), (61.9, 68.7), (27.0, 27.7)),
+    "salomon-xt-6": ("salomon-xt-6", "스니커즈", 96, (92.8, 92.4), (68.4, 68.7), (26.2, 27.7)),
+    "hoka-bondi-8": ("hoka-bondi-8", "러닝화", 356, (92.2, 95.2), (69.2, 73.2), (28.5, 27.0)),
+    "hoka-clifton-9": ("hoka-clifton-9", "러닝화", 356, (92.2, 95.2), (68.9, 73.2), (28.9, 27.0)),
+    "nike-cortez": ("nike-cortez-23-premium-leather", "스니커즈", 96, (88.3, 92.4), (70.2, 68.7), (27.6, 27.7)),
+    "nike-v2k-run": ("nike-v2k-run", "스니커즈", 96, (95.8, 92.4), (66.8, 68.7), (31.2, 27.7)),
+    "asics-gel-1130": ("asics-gel-1130", "스니커즈", 96, (94.5, 92.4), (69.1, 68.7), (24.4, 27.7)),
+    "reebok-club-c-85": ("reebok-club-c-85", "스니커즈", 96, (94.1, 92.4), (67.6, 68.7), (27.5, 27.7)),
+    "newbalance-1906r": ("new-balance-1906r", "스니커즈", 96, (91.5, 92.4), (68.9, 68.7), (30.3, 27.7)),
+    "newbalance-9060": ("new-balance-9060", "스니커즈", 96, (91.2, 92.4), (65.5, 68.7), (29.5, 27.7)),
+    "asics-gel-nyc": ("asics-gel-nyc", "스니커즈", 96, (93.0, 92.4), (70.5, 68.7), (26.8, 27.7)),
+    "nike-zoom-vomero-5": ("nike-zoom-vomero-5", "스니커즈", 96, (95.4, 92.4), (68.7, 68.7), (31.5, 27.7)),
+    "newbalance-204l": ("new-balance-204l", "스니커즈", 96, (90.3, 92.4), (71.1, 68.7), (28.0, 27.7)),
+    "adidas-taekwondo": ("adidas-taekwondo", "스니커즈", 96, (89.0, 92.4), (67.6, 68.7), (22.4, 27.7)),
+    "nike-p-6000": ("nike-p-6000", "스니커즈", 96, (93.9, 92.4), (68.4, 68.7), (29.7, 27.7)),
+    "asics-gt-2160": ("asics-gt-2160", "스니커즈", 96, (97.0, 92.4), (68.7, 68.7), (28.7, 27.7)),
+    "newbalance-1000": ("new-balance-1000", "스니커즈", 96, (92.5, 92.4), (71.7, 68.7), (30.8, 27.7)),
+    "nike-shox-tl": ("nike-shox-tl", "스니커즈", 96, (96.5, 92.4), (71.8, 68.7), (28.5, 27.7)),
+    "nike-killshot-2": ("nike-killshot-2", "스니커즈", 96, (89.0, 92.4), (68.0, 68.7), (27.9, 27.7)),
+    "newbalance-740": ("new-balance-740", "스니커즈", 96, (94.2, 92.4), (71.5, 68.7), (31.0, 27.7)),
+    "puma-palermo": ("puma-palermo", "스니커즈", 96, (89.2, 92.4), (65.9, 68.7), (28.4, 27.7)),
+    "newbalance-550": ("new-balance-550", "스니커즈", 96, (91.4, 92.4), (69.2, 68.7), (25.8, 27.7)),
+    "newbalance-992": ("new-balance-992", "스니커즈", 96, (94.0, 92.4), (68.3, 68.7), (28.3, 27.7)),
+    "on-cloudmonster-3": ("on-cloudmonster-3", "러닝화", 356, (94.3, 95.2), (71.0, 73.2), (25.4, 27.0)),
+    "nike-pegasus-42": ("nike-pegasus-42", "러닝화", 356, (96.5, 95.2), (72.3, 73.2), (27.0, 27.0)),
+    "converse-run-star-hike": ("converse-run-star-hike", "스니커즈", 96, (95.5, 92.4), (75.9, 68.7), (24.5, 27.7)),
+}
+
 MUSINSA = {
     "adidas-samba": ("삼바 OG 화이트(B75806)", 1163169, 16449, (0, 3, 87, 7, 1), (0, 3, 82, 12, 2)),
     "nike-air-force-1": ("에어포스 1 '07 화이트(CW2288-111)", 3976350, 10989, (0, 1, 89, 7, 0), (0, 4, 85, 5, 3)),
@@ -3411,6 +3458,42 @@ def musinsa_src(ms):
     return f"무신사 {label} 구매 후기 {n:,}건 평가(2026-09) — 정사이즈 {tts}%·커요 {big}%·작아요 {small}%"
 
 
+def lab_table(m):
+    """RunRepeat 연구실 실측 표. 값과 평균의 차이는 반올림한 mm로 적는다."""
+    lab = RR_LAB.get(m["slug"])
+    if not lab:
+        return ""
+    _, group, n, *pairs = lab
+    rows = ""
+    for label, pair in zip(("가장 넓은 곳", "앞코 폭", "앞코 높이"), pairs):
+        if pair:
+            d = round(pair[0] - pair[1], 1)
+            diff = "0" if d == 0 else f"{d:+.1f}".replace("-", "−")
+            rows += (f'<tr><th scope="row">{label}</th><td>{num(pair[0])}mm</td>'
+                     f'<td>{num(pair[1])}mm</td><td>{diff}</td></tr>\n          ')
+    return f"""
+    <h3>실측으로 본 폭</h3>
+    <div class="scroller">
+      <table class="pick-table">
+        <caption>RunRepeat 연구실이 잰 값입니다. 평균은 같은 방법으로 잰 {group} {n}켤레의 평균이고, 차이는 mm입니다.</caption>
+        <thead>
+          <tr><th scope="col">실측</th><th scope="col">이 모델</th><th scope="col">평균</th><th scope="col">차이</th></tr>
+        </thead>
+        <tbody>
+          {rows.rstrip()}
+        </tbody>
+      </table>
+    </div>"""
+
+
+def lab_src(m):
+    lab = RR_LAB.get(m["slug"])
+    if not lab:
+        return []
+    items = "·".join(k for k, pair in zip(("가장 넓은 곳", "앞코 폭", "앞코 높이"), lab[3:]) if pair)
+    return [f"RunRepeat 연구실 실측({items}, {lab[1]} {lab[2]}켤레 평균과 비교)"]
+
+
 def build(m, others):
     # 정사이즈 모델은 '권장 mm'가 '평소 사이즈'와 값이 같다.
     # 같은 숫자를 두 번 보여주면 표만 넓어지고 읽는 사람은 헷갈린다.
@@ -3493,7 +3576,7 @@ def build(m, others):
     }, ensure_ascii=False, indent=2)
     crumb_hub = f' / <a href="/{hub}/">{label} 사이즈표</a>' if hub else ""
 
-    srcs = " · ".join(m["sources"] + ([musinsa_src(ms)] if ms else []))
+    srcs = " · ".join(m["sources"] + lab_src(m) + ([musinsa_src(ms)] if ms else []))
 
     # 결론이 길면 글자 크기를 한 단계 줄인다 (표시만 바뀌고 문구는 그대로).
     vlen = len(m["verdict"])
@@ -3591,7 +3674,7 @@ def build(m, others):
     <h2>발볼별 가이드</h2>
     <dl class="width-grid">
       {widths.rstrip()}
-    </dl>{width_note}
+    </dl>{width_note}{lab_table(m)}
   </section>
 
   </div>
