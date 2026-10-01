@@ -113,27 +113,35 @@ def link(m):
 LAB_SETS = (("스니커즈", 96), ("러닝화", 356))
 
 
-def lab_rank_table(widest, n=15):
-    """RunRepeat 실측 '가장 넓은 곳' 순위표(넓은 순 또는 좁은 순). 괄호는 같은 무리 평균과의 차이."""
+def lab_table(slugs, h2, intro, widest=True, n=None):
+    """RunRepeat 실측 표(가장 넓은 곳 순). 괄호는 같은 무리 평균과의 차이. 비교 무리가 LAB_SETS 밖인 모델은 뺀다."""
     by_slug = {m["slug"]: m for m in MODELS}
-    labs = sorted(((by_slug[s], v) for s, v in RR_LAB.items() if v[1:3] in LAB_SETS),
-                  key=lambda x: x[1][3][0], reverse=widest)[:n]
-    skipped = [by_slug[s]["name"] for s, v in RR_LAB.items() if v[1:3] not in LAB_SETS]
+    labs = [(by_slug[s], RR_LAB[s]) for s in slugs if s in RR_LAB]
+    skipped = [m["name"] for m, v in labs if v[1:3] not in LAB_SETS]
+    labs = sorted(((m, v) for m, v in labs if v[1:3] in LAB_SETS), key=lambda x: x[1][3][0], reverse=widest)[:n]
 
     def cell(pair):
         d = round(pair[0] - pair[1], 1)
         return f"{pair[0]:.1f} ({'0' if d == 0 else f'{d:+.1f}'.replace('-', '−')})"
 
-    avg = {v[1:3]: (v[3][1], v[4][1]) for v in RR_LAB.values() if v[1:3] in LAB_SETS}
+    avg = {v[1:3]: (v[3][1], v[4][1]) for _, v in labs}
     sets = ", ".join(f"{g} {k}켤레 평균(가장 넓은 곳 {a[0]:.1f}mm·앞코 폭 {a[1]:.1f}mm)" for (g, k), a in avg.items())
-    word = "넓은" if widest else "좁은"
-    return {"h2": f"실측으로 폭이 {word} 모델",
-            "intro": f"RunRepeat 연구실이 잰 가장 넓은 곳(발볼 부분)이 {word} 순서로 {n}개입니다. "
-                     "모델을 누르면 실측표와 발볼별 가이드를 볼 수 있습니다.",
+    return {"h2": h2, "intro": intro,
             "caption": f"단위는 mm, 괄호는 같은 무리 평균과의 차이입니다. 비교: {sets}."
                        + (f" 비교 무리가 다른 모델({'·'.join(skipped)})은 뺐습니다." if skipped else ""),
             "head": ["모델", "가장 넓은 곳(mm)", "앞코 폭(mm)"],
             "rows": [[link(m), cell(v[3]), cell(v[4])] for m, v in labs], "highlight": 0}
+
+
+def lab_rank_table(widest, n=15):
+    """발볼 넓은·칼발 페이지의 실측 순위표: 전체 모델에서 넓은 순 또는 좁은 순."""
+    word = "넓은" if widest else "좁은"
+    return lab_table([m["slug"] for m in MODELS], f"실측으로 폭이 {word} 모델",
+                     f"RunRepeat 연구실이 잰 가장 넓은 곳(발볼 부분)이 {word} 순서로 {n}개입니다. "
+                     "모델을 누르면 실측표와 발볼별 가이드를 볼 수 있습니다.", widest, n)
+
+
+LAB_SRC = "RunRepeat 연구실 실측(가장 넓은 곳·앞코 폭, 모델 페이지 실측표와 같은 값)"
 
 
 def hub_sub(brand):
@@ -152,7 +160,10 @@ def hub(brand, caption, extra=(), **text):
                    "intro": "평소 신는 사이즈 기준입니다. 모델을 누르면 발볼별 가이드와 근거를 볼 수 있습니다.",
                    "caption": "권장 사이즈는 착용 경향이며 발볼·발등에 따라 달라질 수 있습니다.",
                    "head": ["모델", "권장 사이즈"], "rows": [[link(m), m["verdict"]] for m in ms], "highlight": 0}
-    return {
+    lab = lab_table([m["slug"] for m in ms], f"{label} 모델 실측 폭",
+                    "RunRepeat 연구실이 잰 가장 넓은 곳(발볼 부분)과 앞코 폭입니다. "
+                    "모델을 누르면 실측표와 발볼별 가이드를 볼 수 있습니다.")
+    page = {
         "slug": BRAND_HUBS[brand], "name": f"{label} 사이즈표",
         "title": f"{label} 사이즈표 — mm·US·UK·EU 공식 환산과 모델별 권장 사이즈",
         "eyebrow": f"{label} 공식표" + (f" · 모델 {len(ms)}개" if ms else ""),
@@ -165,6 +176,7 @@ def hub(brand, caption, extra=(), **text):
              "caption": caption, "head": ["KR 표기"] + [["US 남성", "US 여성", "UK", "EU"][i] for i in cols],
              "rows": [[f"{mm}mm"] + [num(chart[mm][i]) for i in cols] for mm in sorted(chart)], "highlight": 0},
             *([model_table] if ms else []),
+            *([lab] if lab["rows"] else []),
             *extra,
         ],
         "related_h2": "다른 브랜드 사이즈표",
@@ -177,6 +189,9 @@ def hub(brand, caption, extra=(), **text):
         "note": "브랜드 공식표는 바뀔 수 있으니, 구매 전 상품 페이지의 사이즈 표기를 한 번 더 확인하시기 바랍니다.",
         **text,
     }
+    if lab["rows"]:
+        page["sources"] = page["sources"] + [LAB_SRC]
+    return page
 
 
 def women_table(brand, chart_w, chart, caption, intro):
@@ -265,7 +280,7 @@ def wide_page():
              "발 모양에 따라 결과가 다를 수 있으니 모델 페이지의 근거와 발볼별 가이드를 함께 보세요."),
         ],
         "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)", "뉴발란스 폭별 발 너비 차트",
-                    "RunRepeat 연구실 실측(가장 넓은 곳·앞코 폭, 모델 페이지 실측표와 같은 값)"],
+                    LAB_SRC],
         "faq": [
             ("발볼 넓은 사람에게 맞는 운동화는 어떤 건가요?",
              f"발볼이 넓어도 평소 사이즈보다 크게 신지 않는 모델은 뉴발란스 530, 리복 클럽 C 85, 컨버스 잭퍼셀, 아디다스 캠퍼스 00s 등 {n0}개입니다. "
@@ -1150,7 +1165,7 @@ def narrow_page():
              "발 모양에 따라 결과가 다를 수 있으니 모델 페이지의 근거와 발볼별 가이드를 함께 보세요."),
         ],
         "sources": ["각 모델 페이지의 근거(브랜드 공식 안내 · KREAM 사이즈 팁 · 착용 후기)",
-                    "RunRepeat 연구실 실측(가장 넓은 곳·앞코 폭, 모델 페이지 실측표와 같은 값)"],
+                    LAB_SRC],
         "faq": [
             ("칼발은 반 사이즈 다운해야 하나요?",
              f"아닙니다. 모델 {total}개 중 {n3}개는 칼발도 평소 사이즈 그대로입니다. "
