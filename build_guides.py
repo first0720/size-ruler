@@ -16,7 +16,7 @@ import os
 import re
 from fractions import Fraction
 
-from build_models import (NAV, stamp, RR_LAB, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
+from build_models import (NAV, stamp, RR_LAB, LAB_SETS, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
                           REEBOK_MAP, ON_MAP, UGG_MAP, BIRKENSTOCK_MAP, TIMBERLAND_MAP, CROCS_MAP, DRM_MAP,
                           MIZUNO_MAP, MIZUNO_WIDTH,
                           _ASICS_US, _ASICS_UK, _ASICS_EU, _ASICS_CM,
@@ -107,10 +107,6 @@ def models_of(brand):
 
 def link(m):
     return f'<a href="/{m["slug"]}/">{m["name"]}</a>'
-
-
-# RunRepeat가 같은 방법으로 잰 비교 무리. 이 무리의 모델끼리만 실측 순위를 매긴다.
-LAB_SETS = (("스니커즈", 96), ("러닝화", 356))
 
 
 def lab_table(slugs, h2, intro, widest=True, n=None):

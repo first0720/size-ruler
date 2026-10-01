@@ -3275,6 +3275,8 @@ BRAND_LABEL = {"온": "온러닝", "오니츠카": "오니츠카 타이거"}
 # 판매하지 않는 모델, 평가 칸이 없는 옛 후기 상품(가젤·스탠스미스·스웨이드), 평가 틀이 두 벌인 카야노 14는 뺐다.
 # RunRepeat 연구실 실측(2026-10-01): 모델 -> (RunRepeat 주소, 비교 무리, 켤레 수,
 #   (가장 넓은 곳, 평균), (앞코 폭, 평균), (앞코 높이, 평균) mm). 없는 항목은 None
+# RunRepeat가 같은 방법으로 잰 비교 무리. 이 무리의 모델끼리만 실측 순위를 매긴다.
+LAB_SETS = (("스니커즈", 96), ("러닝화", 356))
 RR_LAB = {
     "adidas-samba": ("adidas-samba-og", "스니커즈", 96, (91.2, 92.4), (66.1, 68.7), (26.4, 27.7)),
     "adidas-gazelle": ("adidas-gazelle", "스니커즈", 96, (91.0, 92.4), (68.9, 68.7), (25.0, 27.7)),
@@ -3341,6 +3343,8 @@ MUSINSA = {
     "onitsuka-tiger-mexico-66-sd": ("멕시코 66 VIN SD(1183C015_200)", 2682873, 552, (0, 8, 83, 8, 0), (0, 4, 69, 26, 0)),
     "onitsuka-tiger-tokuten": ("토쿠텐(1183C431_020)", 4996203, 158, (0, 2, 89, 5, 3), (0, 1, 91, 4, 3)),
     "converse-run-star-hike": ("런스타 하이크 OX 블랙(168816C)", 2030624, 2364, (0, 0, 89, 7, 1), (0, 2, 90, 3, 2)),
+    # 2026-10-01: 9/29에는 척 70 대표 상품에 평가 칸이 없어 뺐다. 평가 칸이 있는 상품 중 후기가 가장 많은 것
+    "converse-chuck-70": ("척 70 페이디드 데님(A21363C)", 6135453, 324, (0, 2, 94, 1, 2), (0, 0, 91, 5, 2), "2026-10"),
     "newbalance-574": ("574 그레이(ML574EVG)", 4699184, 340, (1, 5, 88, 3, 1), (2, 8, 78, 5, 4)),
     "salomon-xt-6": ("XT-6 화이트(L41252900)", 1762407, 6636, (1, 7, 87, 3, 0), (0, 1, 86, 8, 2)),
     "dr-martens-1460": ("1460 스무스 블랙 화이트 스티치(24758001)", 5262018, 76, (0, 12, 59, 24, 2), (0, 18, 67, 12, 1)),
@@ -3440,12 +3444,12 @@ def stamp(path, html):
 
 def musinsa_split(ms):
     """(작아요, 정사이즈, 커요), (좁아요, 적당해요, 넓어요) 합계 %."""
-    _, _, _, size, width = ms
+    size, width = ms[3], ms[4]
     return (size[0] + size[1], size[2], size[3] + size[4]), (width[3] + width[4], width[2], width[0] + width[1])
 
 
 def musinsa_text(ms):
-    label, _, n, _, _ = ms
+    label, _, n = ms[:3]
     (small, tts, big), (narrow, fit, wide) = musinsa_split(ms)
     return (f"국내 쇼핑몰 무신사의 {label} 구매 후기 {n:,}건에 달린 평가에서 사이즈는 '정사이즈예요' {tts}%, "
             f"'커요' {big}%, '작아요' {small}%였고, 발볼 넓이는 '적당해요' {fit}%, '좁아요' {narrow}%, '넓어요' {wide}%였습니다. "
@@ -3453,9 +3457,11 @@ def musinsa_text(ms):
 
 
 def musinsa_src(ms):
-    label, _, n, _, _ = ms
+    """여섯째 칸이 있으면 수집 월, 없으면 처음 모은 2026-09."""
+    label, _, n = ms[:3]
     (small, tts, big), _ = musinsa_split(ms)
-    return f"무신사 {label} 구매 후기 {n:,}건 평가(2026-09) — 정사이즈 {tts}%·커요 {big}%·작아요 {small}%"
+    when = ms[5] if len(ms) > 5 else "2026-09"
+    return f"무신사 {label} 구매 후기 {n:,}건 평가({when}) — 정사이즈 {tts}%·커요 {big}%·작아요 {small}%"
 
 
 def lab_table(m):
@@ -3483,7 +3489,21 @@ def lab_table(m):
           {rows.rstrip()}
         </tbody>
       </table>
-    </div>"""
+    </div>{lab_rank(lab)}"""
+
+
+def lab_rank(lab):
+    """같은 방법으로 잰 무리(LAB_SETS)의 모델 중 가장 넓은 곳이 몇 번째인지와 순위 페이지 링크."""
+    if lab[1:3] not in LAB_SETS:
+        return ""
+    pool = [v[3][0] for v in RR_LAB.values() if v[1:3] in LAB_SETS]
+    w = lab[3][0]
+    wide, narrow = 1 + sum(x > w for x in pool), 1 + sum(x < w for x in pool)
+    k, word = (wide, "넓습니다") if wide <= narrow else (narrow, "좁습니다")
+    pos = f"가장 {word}" if k == 1 else f"{k}번째로 {word}"
+    return (f"\n    <p>표의 '가장 넓은 곳'은 이 사이트에서 실측이 있는 {len(pool)}개 모델 중 {pos}. "
+            '넓은 모델과 좁은 모델 15개씩은 <a href="/wide-feet-shoes/">발볼 넓은 운동화</a>와 '
+            '<a href="/narrow-feet-shoes/">칼발 운동화</a>에 모아 두었습니다.</p>')
 
 
 def lab_src(m):
@@ -3748,10 +3768,14 @@ if __name__ == "__main__":
     assert [mm for mm, v in CROCS_MAP.items() if mm == v[0] * 10 + 180] == [270, 280, 290, 300]
     # 닥터마틴: 본문의 UK↔mm와 'UK 8 = US 남 9·여 10·EU 42'
     assert [DRM_MAP[mm][2] for mm in (260, 270, 280, 290)] == [7, 8, 9, 10] and DRM_MAP[270] == (9, 10, 8, 42)
+    # 실측 순위 문장: 양 끝 모델과 비교 무리가 다른 모델
+    assert "가장 넓습니다" in lab_rank(RR_LAB["asics-gt-2160"]) and "가장 좁습니다" in lab_rank(RR_LAB["nike-air-max-95"])
+    assert lab_rank(RR_LAB["asics-gel-kayano-14"]) == ""
     # 무신사 평가: 모델이 있고, 다섯 칸 합이 반올림 오차 안에서 100%
     slugs = {m["slug"] for m in MODELS}
-    for s, (label, goods, n, size, width) in MUSINSA.items():
+    for s, (label, goods, n, size, width, *when) in MUSINSA.items():
         assert s in slugs and n > 0 and all(96 <= sum(v) <= 102 for v in (size, width)), s
+        assert not when or re.fullmatch(r"20\d\d-\d\d", when[0]), s
     # 반올림 모델: 표의 모든 줄이 실제 사이즈로 채워진다
     for m in MODELS:
         if m.get("round"):
