@@ -41,7 +41,7 @@ def collect_paths():
     for entry in sorted(os.listdir(".")):
         if not os.path.isdir(entry) or entry.startswith("."):
             continue
-        if entry in {"__pycache__", "node_modules"}:
+        if entry in {"__pycache__", "node_modules", "search"}:   # 검색 페이지는 noindex
             continue
         if os.path.exists(os.path.join(entry, "index.html")):
             paths.append(f"/{entry}/")
@@ -72,6 +72,10 @@ def main():
     print(f"sitemap.xml: {len(paths)}개 URL ({domain})")
     for p in paths:
         print("  ", p)
+
+    # 검색 페이지는 사이트맵의 페이지 목록으로 만든다
+    import build_search
+    build_search.main()
 
 
 if __name__ == "__main__":

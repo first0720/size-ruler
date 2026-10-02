@@ -3436,7 +3436,10 @@ def keep_phrases(text):
 
 # 모든 페이지 머리띠 오른쪽의 주요 메뉴 (손으로 만든 페이지에도 같은 줄을 넣는다)
 NAV = ('<nav class="gnb" aria-label="주요 메뉴"><a href="/">신발</a><a href="/#brands">브랜드</a>'
-       '<a href="/#clothing">의류</a><a href="/ring-size/">반지</a></nav>')
+       '<a href="/#clothing">의류</a><a href="/ring-size/">반지</a>'
+       '<a href="/search/" aria-label="사이트 검색"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" '
+       'fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" style="vertical-align:-4px">'
+       '<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></a></nav>')
 STAMP = re.compile(r'<time datetime="(\d{4}-\d{2}-\d{2})">\1</time>')
 
 
