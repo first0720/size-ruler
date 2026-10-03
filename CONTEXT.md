@@ -80,10 +80,12 @@
   - 3일차(운영자에게 준 목록): newbalance-327, onitsuka-tiger-size-chart, polo-ralph-lauren-size, thom-browne-size-chart,
     northface-nuptse, moncler-size-chart, birkenstock-boston, newbalance-574, half-size-up, hat-size
   - 10/2 완료: polo-ralph-lauren-size, thom-browne-size-chart, northface-nuptse, moncler-size-chart, birkenstock-boston,
-    newbalance-574, half-size-up, hat-size, pants-size-women. 다음 구글 요청은 아래 4일차(운영자가 달라고 할 때 준다). 그다음 4일차: nike-air-max-95, newbalance-990v6,
-    asics-gel-nyc, vans-sk8-hi, on-cloud-5, nike-pegasus-42, newbalance-1080, nike-air-jordan-3, onitsuka-tiger-mexico-66-sd, converse-run-star-hike
-  - 4일차: newbalance-990v6, asics-gel-nyc, vans-sk8-hi, on-cloud-5, nike-pegasus-42, newbalance-1080, nike-air-jordan-3,
-    onitsuka-tiger-mexico-66-sd, converse-run-star-hike, mizuno-size-chart
+    newbalance-574, half-size-up, hat-size, pants-size-women
+  - 10/3 완료(운영자): 구글 10개 = 내용이 바뀐 페이지 재요청 9개(clothing-size-men·clothing-size-women·adidas-samba·
+    newbalance-993·ring-size·vans-old-skool·kids-clothing-size·newbalance-530·adidas-handball-spezial) + nike-air-max-95.
+    네이버 27개 = 같은 9개 + 위의 남은 18개. 네이버는 소개·개인정보·검색을 빼고 전 페이지 요청 끝(이후엔 바뀐 페이지만 재요청)
+  - 다음 구글(운영자가 달라고 할 때): newbalance-990v6, asics-gel-nyc, vans-sk8-hi, on-cloud-5, nike-pegasus-42, newbalance-1080,
+    nike-air-jordan-3, onitsuka-tiger-mexico-66-sd, converse-run-star-hike, mizuno-size-chart
   - 나머지는 사이트맵에 맡긴다(9/30 확인 때 요청 없이 색인된 페이지가 17개)
 
 ---
@@ -776,9 +778,9 @@ sizeruler.com으로 운영한 지 약 1주였고, 신청 직전 이틀에 페이
 - 남자: 제목·설명에 키, '키로 보는 사이즈' 표(노스페이스 코리아 `TNF_M` 화이트라벨 신장), 랄프 로렌 코리아는 95 = S·100 = M이라는
   브랜드 차이 문단, 키·몸무게 FAQ(확인한 공식표 노스페이스·파타고니아·랄프 로렌에는 몸무게가 없음)
 - 여자: 본문의 '국가가 정한 규칙이 아니다·신체 치수와 연결되지 않는 관습'은 사실과 달라 고쳤다. 국가기술표준원 설명(중앙일보
-  2017-07-25): 1981년 표기법, 1980년 20대 여성 평균 키 155cm·가슴둘레 85cm로 55, 키 5cm·가슴 3cm 간격으로 44~88, 80년대 후반부터
-  공식 체계 아님, 1990년부터 신체 치수 직접 표기 권고. 기준 치수표(`KS1981_W`)를 넣고, 근거 없던 '가슴둘레 참고' 칸(80·85·90…)은 뺐다.
-  '통용되는 대응' 표의 알파벳·US·EU는 쇼핑몰 조견표 출처 그대로(중앙일보는 미국 2 = 44, 4·6 = 55, 8·10 = 66으로 비교해 한 칸쯤 다르다 — 확인 후보)
+  2017-07-26 입력, 원문 joongang.co.kr/article/21789253): 1981년 표기법, 1980년 20대 여성 평균 키 155cm·가슴둘레 85cm로 55,
+  키 5cm·가슴 3cm 간격으로 44~88, 80년대 후반부터 공식 체계 아님, 1990년부터 신체 치수 직접 표기 권고. 기준 치수표(`KS1981_W`)를 넣고,
+  근거 없던 '가슴둘레 참고' 칸(80·85·90…)은 뺐다. 대응표는 2026-10-04에 고침(아래 '의류 표 정확성')
 - 애드센스 재신청: 10/20 전후 목표. 10/9쯤 실적을 다시 받아 하루 클릭 10회 이상·색인 100개 이상이면 신청
 - 모델 '사이즈 팁' 검색어(삼바 27회·올드스쿨·530·993·스페지알): 제목을 '… 사이즈 팁 — …'으로, 설명에 페이지에 있는 숫자
   (무신사 후기 수·정사이즈 %, RunRepeat 투표·실측)를 넣었다. 삼바에 '에어포스 1 + 5mm = 삼바'(두 결론에서 칼발·보통·넓음 모두 성립)와
@@ -808,6 +810,32 @@ sizeruler.com으로 운영한 지 약 1주였고, 신청 직전 이틀에 페이
 - 숫자만 찾으면(예: 275) 신발 사이즈 환산표·발 길이표로 안내. `?q=` 주소로 검색어를 넘길 수 있다
 - 모든 페이지 머리띠 메뉴에 돋보기 아이콘(`build_models.NAV`, 손으로 만든 페이지와 cleanup.py 404에도 같은 줄)
 - `build_sitemap.py`가 끝에 `build_search.main()`을 부른다. 새 별칭은 `build_search.py`의 사전에 더한다
+
+### 다음 작업 후보 (2026-10-03 분석)
+
+- 본문 겹침(6어절 묶음, scratchpad `uniq.py`): 모델 페이지 약 85개는 고유 문장 35~70%·10개 이상 페이지 공통 틀 문장 10~44%,
+  의류·가이드 페이지는 고유 90% 이상. 애드센스 '가치 없는 콘텐츠'에서 약한 쪽은 모델 페이지
+- ~~의류 표 정확성~~ (2026-10-04 완료) — 남자 상의 US 칸이 알파벳 칸 복사(95 = US M)라 틀렸다. 사이트에 이미 있던 공식표가
+  모두 미국 M = 한국 100: 랄프 로렌 코리아(XS 90~XXL 115)·톰 브라운(`TB_MEN`, XXS 85~)·미국 노스페이스(M 39~41인치)·
+  나이키 미국 상의표(M 37.5~41인치 = 95~104cm, 아시아 표 M 36~38인치 = 91~97cm).
+  - 남자 상의 표: 국내 알파벳(`TNF_M`) | 미국 브랜드(`TB_MEN`, 랄프 로렌과 같음을 assert) | 이탈리아(`MONCLER_M` 몸 가슴둘레가
+    가장 가까운 숫자, 같은 거리면 '44·46'). EU 칸(근거 없음)은 뺐다. 본문 '해외 직구는 어깨너비…'(근거 없는 일반화)를 '미국 브랜드는
+    알파벳이 한 칸 작습니다'로, FAQ '100은 대체로 US·EU의 L'(틀림)을 고치고 '미국 M은 한국 몇?' 추가
+  - 남자 하의 표: 근거 없던 한국(72·82·92…)·알파벳·US 칸을 빼고 인치 | 허리둘레 | 허리단면(÷2)
+  - 여자: '통용되는 대응'(쇼핑몰 출처)을 톰 브라운 공식(`TB_WOMEN`: 44 = XS·미국 2·이탈리아 38 … 88 = XL·10·46)으로. 출처마다
+    한 칸 다름을 캡션·본문·FAQ에: 중앙일보(기자 비교) 2 = S(44)·4·6 = M(55)·8·10 = L(66), 몽클레어 여성 S = 이탈리아 42.
+    근거 없던 EU 칸(32~42)은 뺐다. 중앙일보 날짜 07-25 → 07-26(원문 입력 2017.07.26 00:01)
+  - 아동복: 첫 표의 US(근사) 칸을 빼고 새 표 '미국 사이즈는 브랜드마다 한 칸씩 다릅니다'(#us): 랄프 로렌 코리아(`RL_TODDLER`·
+    `RL_BOYS` 키) | 나이키 미국(유아 12M 29~31.5인치 … 아동 XL 18~20 62~67인치). 같은 키에 나이키가 한 칸 큰 구간(100: 3T vs 4T,
+    110: 5 vs 6, 120: 6 vs 6X·7). 2T·24M·'키 110cm는 미국 몇' FAQ. 검사: scratchpad `growth/check_page.py`가 두 표를 원본에서 다시 계산
+  - EU(유럽 FR 기준) 여성 숫자는 H&M이 사이즈 가이드를 상품 페이지로 옮겨 공식 근거를 못 잡았다(필요하면 상품 페이지에서)
+- RunRepeat 실측에 굽 높이(heel stack: 반으로 잘라 뒤꿈치 쪽 12% 지점 중앙)·앞굽·드롭·무게가 있다(US 남 9).
+  삼바 OG 20.3mm, 에어포스 1 31.7mm, 덩크 로우 23.1mm, 530 37.3mm, 올드스쿨 18.7mm. 자동완성에 모델별 '굽높이'가 많고
+  서치콘솔에도 '삼바 굽높이' 등이 내용 없이 32~46위로 노출. 안쪽 길이(internal length)는 RunRepeat가 '핏의 좋은 척도가
+  아니다'라고 적어 쓰지 않는다
+- 허리 인치: 서치콘솔 '95cm 인치'(84회)·'91cm 인치'·'허리둘레 95cm' 등 약 140회가 남자 옷 페이지에 노출,
+  자동완성 '허리 32인치 cm·단면·바지 사이즈', '허리 인치 계산기·평균', '바지 82 사이즈 인치'
+- 아동 신발 나이별 발 길이는 공식 자료(사이즈코리아) 확인 전
 
 ### 데이터 보강 (약한 곳)
 
