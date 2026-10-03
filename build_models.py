@@ -3328,6 +3328,27 @@ RR_LAB = {
     "nike-pegasus-42": ("nike-pegasus-42", "러닝화", 356, (96.5, 95.2), (72.3, 73.2), (27.0, 27.0)),
     "converse-run-star-hike": ("converse-run-star-hike", "스니커즈", 96, (95.5, 92.4), (75.9, 68.7), (24.5, 27.7)),
 }
+# RunRepeat 연구실 실측 요약표(Lab test results, 2026-10-04): 모델 -> (굽 높이, 앞굽 높이 mm, 무게 g). 모두 남성 US 9.
+# 신발을 반으로 잘라 안쪽 길이 12%(뒤꿈치 쪽)·75%(앞쪽) 지점 가운데서 잰 밑창 두께(세계육상연맹 방식, testing-methodology).
+# 드롭(앞뒤 높이 차이) = 굽 높이 − 앞굽 높이로, 42개 모두 페이지의 드롭 값과 같다.
+RR_STACK = {
+    "adidas-samba": (20.3, 11.7, 335), "adidas-gazelle": (23.3, 15.0, 369), "nike-air-force-1": (31.7, 17.2, 465),
+    "newbalance-530": (37.3, 25.4, 308), "vans-old-skool": (18.7, 12.7, 363), "nike-dunk-low": (23.1, 15.5, 420),
+    "newbalance-993": (33.2, 22.0, 417), "adidas-superstar": (26.8, 13.6, 401),
+    "asics-gel-kayano-14": (32.7, 22.6, 352), "adidas-stan-smith": (23.7, 13.5, 383),
+    "adidas-campus-00s": (24.6, 14.5, 422), "newbalance-2002r": (35.4, 24.3, 383),
+    "newbalance-327": (35.0, 25.0, 301), "newbalance-990v6": (39.1, 23.8, 366), "newbalance-574": (38.2, 25.2, 393),
+    "nike-air-max-90": (36.4, 22.2, 380), "nike-air-max-95": (41.1, 26.7, 458), "salomon-xt-6": (31.7, 21.0, 329),
+    "hoka-bondi-8": (36.2, 30.0, 311), "hoka-clifton-9": (32.7, 26.6, 249), "nike-cortez": (30.8, 20.9, 336),
+    "nike-v2k-run": (33.9, 21.1, 315), "asics-gel-1130": (32.3, 22.3, 366), "reebok-club-c-85": (23.1, 15.2, 394),
+    "newbalance-1906r": (37.1, 25.6, 401), "newbalance-9060": (37.3, 26.0, 427), "asics-gel-nyc": (34.8, 24.8, 373),
+    "nike-zoom-vomero-5": (31.4, 21.8, 316), "newbalance-204l": (30.1, 18.3, 258),
+    "adidas-taekwondo": (23.4, 15.7, 301), "nike-p-6000": (29.7, 20.7, 292), "asics-gt-2160": (31.1, 23.2, 340),
+    "newbalance-1000": (36.5, 25.2, 373), "nike-shox-tl": (40.8, 25.3, 430), "nike-killshot-2": (16.9, 12.3, 319),
+    "newbalance-740": (31.7, 21.5, 319), "puma-palermo": (22.6, 15.6, 371), "newbalance-550": (33.7, 18.0, 452),
+    "newbalance-992": (33.9, 24.8, 444), "on-cloudmonster-3": (38.6, 32.2, 301),
+    "nike-pegasus-42": (36.0, 22.0, 286), "converse-run-star-hike": (50.5, 27.9, 581),
+}
 
 MUSINSA = {
     "adidas-samba": ("삼바 OG 화이트(B75806)", 1163169, 16449, (0, 3, 87, 7, 1), (0, 3, 82, 12, 2)),
@@ -3516,12 +3537,46 @@ def lab_rank(lab):
             '<a href="/narrow-feet-shoes/">칼발 운동화</a>에 모아 두었습니다.</p>')
 
 
+def heel_rank(heel):
+    """굽 높이가 실측 모델 중 몇 번째인지. 위·아래 중 가까운 쪽으로 말하고, 같은 값은 같은 순위."""
+    pool = [v[0] for v in RR_STACK.values()]
+    high, low = 1 + sum(x > heel for x in pool), 1 + sum(x < heel for x in pool)
+    k, word = (high, "높습니다") if high <= low else (low, "낮습니다")
+    return f"가장 {word}" if k == 1 else f"{k}번째로 {word}"
+
+
+def stack_table(m):
+    """RunRepeat 실측 굽 높이·앞굽·드롭·무게 표와 굽 높이 순위 문장."""
+    s = RR_STACK.get(m["slug"])
+    if not s:
+        return ""
+    heel, fore, g = s
+    rows = "".join(f'<tr><th scope="row">{a}</th><td>{b}</td></tr>\n          ' for a, b in
+                   (("굽 높이(뒤꿈치)", f"{heel:.1f}mm"), ("앞굽 높이", f"{fore:.1f}mm"),
+                    ("앞뒤 높이 차이(드롭)", f"{heel - fore:.1f}mm"), ("무게(한 짝)", f"{g}g")))
+    return f"""
+    <h3>굽 높이와 무게</h3>
+    <div class="scroller">
+      <table class="pick-table">
+        <caption>RunRepeat 연구실 실측(남성 US 9). 굽 높이는 신발을 반으로 잘라 뒤꿈치 쪽 가운데서 잰 밑창 두께입니다.</caption>
+        <thead>
+          <tr><th scope="col">실측</th><th scope="col">이 모델</th></tr>
+        </thead>
+        <tbody>
+          {rows.rstrip()}
+        </tbody>
+      </table>
+    </div>
+    <p>이 사이트에서 굽 높이 실측이 있는 {len(RR_STACK)}개 모델 중 {heel_rank(heel)}. 전체 순위는 <a href="/sneaker-heel-height/">운동화 굽높이 순위</a>에 있습니다.</p>"""
+
+
 def lab_src(m):
     lab = RR_LAB.get(m["slug"])
     if not lab:
         return []
     items = "·".join(k for k, pair in zip(("가장 넓은 곳", "앞코 폭", "앞코 높이"), lab[3:]) if pair)
-    return [f"RunRepeat 연구실 실측({items}, {lab[1]} {lab[2]}켤레 평균과 비교)"]
+    return ([f"RunRepeat 연구실 실측({items}, {lab[1]} {lab[2]}켤레 평균과 비교)"]
+            + (["RunRepeat 연구실 실측(굽 높이·앞굽 높이·무게, 남성 US 9)"] if m["slug"] in RR_STACK else []))
 
 
 def build(m, others):
@@ -3704,7 +3759,7 @@ def build(m, others):
     <h2>발볼별 가이드</h2>
     <dl class="width-grid">
       {widths.rstrip()}
-    </dl>{width_note}{lab_table(m)}
+    </dl>{width_note}{lab_table(m)}{stack_table(m)}
   </section>
 
   </div>
@@ -3781,6 +3836,10 @@ if __name__ == "__main__":
     # 실측 순위 문장: 양 끝 모델과 비교 무리가 다른 모델
     assert "가장 넓습니다" in lab_rank(RR_LAB["asics-gt-2160"]) and "가장 좁습니다" in lab_rank(RR_LAB["nike-air-max-95"])
     assert lab_rank(RR_LAB["asics-gel-kayano-14"]) == ""
+    # 굽 높이: 폭 실측 모델과 같은 42개, 앞굽보다 높고, 순위 문장의 양 끝
+    assert set(RR_STACK) == set(RR_LAB) and all(f < h and 200 < g < 700 for h, f, g in RR_STACK.values())
+    assert heel_rank(50.5) == "가장 높습니다" and heel_rank(16.9) == "가장 낮습니다"
+    assert RR_STACK["adidas-samba"] == (20.3, 11.7, 335) and RR_STACK["nike-air-force-1"][:2] == (31.7, 17.2)
     # 무신사 평가: 모델이 있고, 다섯 칸 합이 반올림 오차 안에서 100%
     slugs = {m["slug"] for m in MODELS}
     for s, (label, goods, n, size, width, *when) in MUSINSA.items():

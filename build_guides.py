@@ -16,7 +16,7 @@ import os
 import re
 from fractions import Fraction
 
-from build_models import (NAV, stamp, RR_LAB, LAB_SETS, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
+from build_models import (NAV, stamp, RR_LAB, RR_STACK, LAB_SETS, MODELS, NIKE_MAP, ADIDAS_MAP, NB_MAP, VANS_MAP, CONVERSE_MAP, ASICS_MAP, PUMA_MAP,
                           REEBOK_MAP, ON_MAP, UGG_MAP, BIRKENSTOCK_MAP, TIMBERLAND_MAP, CROCS_MAP, DRM_MAP,
                           MIZUNO_MAP, MIZUNO_WIDTH,
                           _ASICS_US, _ASICS_UK, _ASICS_EU, _ASICS_CM,
@@ -299,6 +299,7 @@ def wide_page():
         "related": [("/foot-width/", "발볼 기준", "한국인 평균 발볼과 재는 법"),
                     ("/newbalance-width/", "뉴발란스 발볼", "D·2E·4E 발 너비"),
                     ("/narrow-feet-shoes/", "칼발 운동화", "작게 신는 모델과 그대로 신는 모델"),
+                    ("/sneaker-heel-height/", "운동화 굽높이", f"실측 {len(RR_STACK)}켤레 순위"),
                     ("/half-size-up/", "반업 뜻", "반 사이즈 업은 5mm"),
                     ("/newbalance-size-chart/", "뉴발란스 사이즈표", "공식 환산 · 모델별 권장"),
                     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
@@ -1180,11 +1181,99 @@ def narrow_page():
         "related_h2": "함께 보면 좋은 페이지",
         "related": [("/foot-width/", "발볼 기준", "칼발 뜻과 한국인 평균 발볼"),
                     ("/wide-feet-shoes/", "발볼 넓은 운동화", "올리지 않아도 되는 모델"),
+                    ("/sneaker-heel-height/", "운동화 굽높이", f"실측 {len(RR_STACK)}켤레 순위"),
                     ("/half-size-up/", "반업 뜻", "반 사이즈 업은 5mm"),
                     ("/newbalance-width/", "뉴발란스 발볼", "B·D·2E·4E 발 너비"),
                     ("/foot-length-chart/", "발 길이로 사이즈 찾기", "브랜드 공식표의 발 길이"),
                     ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
         "note": "착용 경향은 모델과 생산 시기에 따라 달라질 수 있으며, 개인의 발 모양에 따라 결과가 다를 수 있습니다.",
+    }
+
+
+# RunRepeat 모델 페이지의 굽 높이 비교 평균(2026-10-04): (무리, 켤레 수, 평균 mm)
+RR_HEEL_AVG = (("스니커즈", 104, 30.5), ("러닝화", 479, 35.6))
+
+
+def heel_page():
+    """운동화 굽높이 순위. 결론·본문·질문의 숫자는 모두 RR_STACK에서 만든다(조사가 숫자에 붙지 않게 쓴다)."""
+    by = {m["slug"]: m for m in MODELS}
+    n = len(RR_STACK)
+    ranked = sorted(RR_STACK, key=lambda s: -RR_STACK[s][0])
+    h, fore, nm = (lambda s: RR_STACK[s][0]), (lambda s: RR_STACK[s][1]), (lambda s: by[s]["name"])
+    mm = lambda s: f"{h(s):.1f}mm"
+    # 휴대폰 폭에 맞게 세 칸만 둔다(순위 번호를 붙이면 모델 칸이 길어져 문장형 표로 바뀐다). 무게는 모델 페이지 표에.
+    rows = [[link(by[s]), mm(s), f"{fore(s):.1f}mm"] for s in ranked]
+    top, second, third, low = ranked[0], ranked[1], ranked[2], ranked[-1]
+    af, dunk, samba, b530 = "nike-air-force-1", "nike-dunk-low", "adidas-samba", "newbalance-530"
+    drop = {s: round(h(s) - fore(s), 1) for s in RR_STACK}
+    dmax, dmin = max(drop, key=drop.get), min(drop, key=drop.get)
+    heavy, light = (f(RR_STACK, key=lambda s: RR_STACK[s][2]) for f in (max, min))
+    nb = [s for s in ranked if s.startswith("newbalance-")]
+    short = lambda s: nm(s).removeprefix("뉴발란스 ")
+    nb_up = "·".join(f"{short(s)}({mm(s)})" for s in nb if h(s) > h(b530))
+    nb_same = "·".join(short(s) for s in nb if h(s) == h(b530) and s != b530)
+    runners = "·".join(nm(s) for s in ranked if RR_LAB[s][1] == "러닝화")
+    avg = ", ".join(f"{g} {c}켤레 {a}mm" for g, c, a in RR_HEEL_AVG)
+    return {
+        "slug": "sneaker-heel-height",
+        "name": "운동화 굽높이",
+        "title": f"운동화 굽높이 순위 — 에어포스·삼바·덩크·530 실측 {n}켤레",
+        "desc": f"RunRepeat 연구실이 신발을 반으로 잘라 잰 굽 높이 순위입니다. 에어포스 1 {mm(af)}, 덩크 로우 {mm(dunk)}, "
+                f"삼바 {mm(samba)}, 뉴발란스 530 {mm(b530)}. 실측 {n}켤레의 굽 높이 순위와 앞굽 높이를 정리했습니다.",
+        "eyebrow": f"굽 높이 · 실측 {n}켤레",
+        "h1": "굽 높이를 <em>반으로 잘라</em> 잰 순위",
+        "verdict_top": "실측",
+        "verdict": f"에어포스 1 {mm(af)}, 덩크 로우 {mm(dunk)}",
+        "verdict_sub": f"삼바 {mm(samba)}, 뉴발란스 530 {mm(b530)}입니다. 가장 높은 모델은 {nm(top)} {mm(top)}, "
+                       f"가장 낮은 모델은 {nm(low)} {mm(low)}입니다. RunRepeat 연구실이 남성 US 9를 반으로 잘라 "
+                       "뒤꿈치 쪽 가운데서 잰 밑창 두께입니다.",
+        "tables": [{"h2": "굽 높이 순위",
+                    "intro": "뒤꿈치 쪽 밑창이 두꺼운 순서입니다. 모델을 누르면 사이즈 가이드와 폭 실측을 볼 수 있습니다.",
+                    "caption": "RunRepeat 연구실 실측(남성 US 9). 앞굽은 안쪽 길이 75% 지점의 두께입니다. "
+                               "무게와 드롭은 모델 페이지의 '굽 높이와 무게' 표에 있습니다.",
+                    "head": ["모델", "굽 높이", "앞굽"], "rows": rows, "highlight": 0}],
+        "body": [
+            ("잰 방법",
+             "RunRepeat는 모든 신발을 남성 US 9로 사서 잽니다. 신발을 반으로 잘라 안쪽 길이의 12% 지점(뒤꿈치 쪽)과 "
+             "75% 지점(앞쪽)에서 밑창 두께를 재는데, 세계육상연맹 방식대로 옆면이 아니라 가운데를 잽니다. "
+             "그래서 겉에서 보이는 밑창 높이와는 다를 수 있습니다."),
+            ("드롭은 앞뒤 높이 차이",
+             f"굽 높이에서 앞굽 높이를 뺀 값이 드롭입니다. 실측 {n}켤레 중 드롭이 가장 큰 건 {nm(dmax)} {drop[dmax]:.1f}mm, "
+             f"가장 작은 건 {nm(dmin)} {drop[dmin]:.1f}mm입니다. 모델마다의 드롭은 모델 페이지의 '굽 높이와 무게' 표에 있습니다."),
+            ("러닝화는 평균이 다릅니다",
+             f"RunRepeat가 같은 방법으로 잰 평균 굽 높이는 {avg}입니다. 이 표에서 러닝화는 {runners}입니다."),
+            ("무게는 한 짝 기준",
+             f"무게도 남성 US 9 한 짝입니다. 가장 무거운 건 {nm(heavy)} {RR_STACK[heavy][2]}g, "
+             f"가장 가벼운 건 {nm(light)} {RR_STACK[light][2]}g입니다."),
+        ],
+        "sources": ["RunRepeat 연구실 실측 — 모델별 Lab test results의 굽 높이·앞굽 높이·무게(남성 US 9, 2026-10-04)",
+                    "RunRepeat 측정 방법(Testing methodology) — 안쪽 길이 12%·75% 지점 가운데, 세계육상연맹 방식",
+                    f"RunRepeat 굽 높이 평균({avg})"],
+        "faq": [
+            ("에어포스 1 굽높이는 몇 cm인가요?",
+             f"RunRepeat 실측으로 {mm(af)}(약 {h(af) / 10:.1f}cm)입니다. 앞굽은 {fore(af):.1f}mm라 뒤꿈치 쪽이 {drop[af]:.1f}mm 더 높습니다."),
+            ("에어포스 1과 덩크 로우 굽높이 차이는?",
+             f"에어포스 1은 {mm(af)}, 덩크 로우는 {mm(dunk)}로 에어포스 1이 {h(af) - h(dunk):.1f}mm 높습니다. "
+             f"앞굽은 각각 {fore(af):.1f}mm·{fore(dunk):.1f}mm입니다."),
+            ("아디다스 삼바 굽높이는 몇 cm인가요?",
+             f"삼바 OG는 {mm(samba)}(약 {h(samba) / 10:.1f}cm)로, 같은 아디다스 가젤 {mm('adidas-gazelle')}·"
+             f"슈퍼스타 {mm('adidas-superstar')}보다 낮습니다."),
+            ("뉴발란스 530 굽높이는 몇 cm인가요?",
+             f"{mm(b530)}(약 {h(b530) / 10:.1f}cm)입니다. 실측이 있는 뉴발란스 {len(nb)}개 중 {nb_up} 다음으로 높고, "
+             f"{nb_same}도 {mm(b530)}입니다."),
+            ("굽이 가장 높은 운동화는 무엇인가요?",
+             f"실측 {n}켤레 중 가장 높은 건 {nm(top)} {mm(top)}입니다. 그다음은 {nm(second)} {mm(second)}, "
+             f"{nm(third)} {mm(third)}이고, 가장 낮은 건 {nm(low)} {mm(low)}입니다."),
+            ("굽 높이는 어떻게 잰 값인가요?",
+             "RunRepeat 연구실이 남성 US 9를 반으로 잘라, 안쪽 길이의 12% 지점(뒤꿈치 쪽) 가운데에서 잰 밑창 두께입니다. "
+             "앞굽은 75% 지점에서 재고, 굽 높이에서 앞굽을 뺀 값이 드롭입니다."),
+        ],
+        "related_h2": "함께 보면 좋은 페이지",
+        "related": [model_link(af), model_link(dunk), model_link(samba), model_link(b530),
+                    ("/wide-feet-shoes/", "발볼 넓은 운동화", "실측 폭이 넓은 15개"),
+                    ("/narrow-feet-shoes/", "칼발 운동화", "실측 폭이 좁은 15개"),
+                    ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
+        "note": "실측은 남성 US 9를 잰 값이라 다른 사이즈나 생산 시기에 따라 조금 다를 수 있습니다.",
     }
 
 
@@ -2775,6 +2864,7 @@ PAGES += [
     },
     wide_page(),
     narrow_page(),
+    heel_page(),
     half_page(),
 ]
 
@@ -2949,6 +3039,13 @@ if __name__ == "__main__":
     by = {m["slug"]: m for m in MODELS}
     assert all(wide_group(by[s]) == g for g, ss in WIDE_NAMED.items() for s in ss)
     assert all(narrow_group(by[s]) == g for g, ss in NARROW_NAMED.items() for s in ss)
+    # 굽높이 순위: 줄 수, 양 끝, 같은 값은 같은 순위, 결론 문구의 숫자
+    hp = heel_page()
+    hr = hp["tables"][0]["rows"]
+    assert len(hr) == len(RR_STACK) and "런스타 하이크" in hr[0][0] and hr[0][1] == "50.5mm" and hr[-1][1] == "16.9mm"
+    assert [float(r[1][:-2]) for r in hr] == sorted((v[0] for v in RR_STACK.values()), reverse=True)
+    assert "is-text" not in build(hp) and hp["verdict"] == "에어포스 1 31.7mm, 덩크 로우 23.1mm"
+    assert "990v6(39.1mm)·574(38.2mm) 다음으로 높고, 9060도 37.3mm" in hp["faq"][3][1]
     assert NIKE_MAP[270] == (9, 10.5, 8, 42.5) and NIKE_MAP[265][3] == NB_MAP[265][3] == 42
     assert all(NIKE_W[mm][0] == NIKE_MAP[mm][1] - 0.5 for mm in range(245, 305, 5))
     assert all(NB_W[mm][0] == NB_MAP[mm][1] - 0.5 for mm in NB_W)

@@ -32,6 +32,7 @@ TOPIC_ALIASES = {
     "ring-size": "반지 호수 ring", "bra-size": "브라 브래지어 bra", "hat-size": "모자 cap", "pants-size-women": "바지 청바지 인치",
     "clothing-size-men": "옷 상의 하의 바지 인치", "clothing-size-women": "옷 상의", "kids-clothing-size": "아이옷 유아복 아기옷",
     "kids-shoe-size": "아이신발 유아신발", "foot-length-chart": "발길이 발사이즈", "half-size-up": "반업 반사이즈",
+    "sneaker-heel-height": "굽 굽높이 굽높은 키높이 밑창 무게 heel",
 }
 CLOTHING = {"clothing-size-men", "clothing-size-women", "kids-clothing-size", "pants-size-women", "bra-size", "hat-size",
             "ring-size", "northface-nuptse", "northface-size-chart", "canada-goose-size-chart", "patagonia-size-chart",
