@@ -1277,6 +1277,138 @@ def heel_page():
     }
 
 
+# 허리 인치 계산기: 표가 정적 HTML에 있으므로 JS가 꺼지면 숨겨 둔다.
+WAIST_TOOL = """
+  <section id="waistTool" hidden>
+    <h2>허리 인치 계산기</h2>
+    <p>인치나 cm 중 아는 값을 넣으면 나머지와 허리단면을 계산합니다.</p>
+    <div class="entry">
+      <label for="wIn">인치</label>
+      <input id="wIn" type="number" inputmode="decimal" min="10" max="70" step="any" placeholder="32">
+    </div>
+    <div class="entry">
+      <label for="wCm">허리둘레(cm)</label>
+      <input id="wCm" type="number" inputmode="decimal" min="25" max="180" step="any" placeholder="81.3">
+    </div>
+    <p class="ring-out" id="wOut" aria-live="polite"></p>
+  </section>
+"""
+WAIST_SCRIPT = """<script>
+(function(){
+  var tool=document.getElementById("waistTool");
+  if(!tool) return;
+  tool.hidden=false;
+  var inch=document.getElementById("wIn"), cm=document.getElementById("wCm"), out=document.getElementById("wOut");
+  function r(x){ return Math.round(x*10)/10; }
+  function show(c){ out.textContent=c>0?"허리둘레 "+r(c)+"cm = "+r(c/2.54)+"인치, 허리단면 "+r(c/2)+"cm":""; }
+  inch.addEventListener("input",function(){ var v=parseFloat(inch.value); cm.value=v>0?r(v*2.54):""; show(v*2.54); });
+  cm.addEventListener("input",function(){ var v=parseFloat(cm.value); inch.value=v>0?r(v/2.54):""; show(v); });
+})();
+</script>
+"""
+
+
+def waist_page():
+    """허리 인치 변환. 환산은 1인치 = 2.54cm 계산, 라벨과 실측은 리바이스 코리아 공식 실측, 평균·기준은 건강검진 자료."""
+    cm, half = (lambda i: f"{i * 2.54:.1f}cm"), (lambda i: f"{i * 2.54 / 2:.1f}cm")
+    inch = lambda c: f"{c / 2.54:.1f}인치"
+
+    def diff(d):
+        d = round(d, 1)
+        return "0" if d == 0 else f"{d:+.1f}".replace("-", "−")
+
+    levi = ([(f"남성 {k}", k, h * 2) for k, h in LEVI_501_M_WAIST.items()]
+            + [(f"여성 {k}", k, w * 2) for k, w, _, _ in LEVI_501_W])
+    m32, w28 = LEVI_501_M_WAIST[32] * 2, dict((k, w) for k, w, _, _ in LEVI_501_W)[28] * 2
+    (_, avg_m), (_, avg_w) = WAIST_AVG
+    return {
+        "slug": "waist-inch",
+        "name": "허리 인치",
+        "title": f"허리 인치 cm 변환표 — 32인치는 {cm(32)}, 단면·평균·재는 법",
+        "desc": f"허리 인치에 2.54를 곱하면 cm입니다. 32인치는 {cm(32)}, 단면 {half(32)}. 24~44인치 표와 계산기, "
+                f"리바이스 501 공식 실측으로 본 라벨과 실제 차이, 평균 허리둘레(남 {avg_m:.1f}·여 {avg_w:.1f}cm)까지 정리했습니다.",
+        "eyebrow": "인치 × 2.54 = cm",
+        "h1": f"허리 32인치는 <em>{cm(32)}</em>입니다",
+        "verdict_top": "환산",
+        "verdict": "허리 인치 × 2.54 = cm",
+        "verdict_sub": f"32인치는 {cm(32)}, 단면(둘레의 절반)은 {half(32)}입니다. 거꾸로 cm를 2.54로 나누면 인치라, "
+                       f"허리둘레 95cm는 {inch(95)}입니다. 바지 라벨과 실제 허리는 1~2cm 다를 수 있어 상품의 실측 허리단면을 함께 보세요.",
+        "tables": [
+            {"h2": "허리 인치 → cm",
+             "intro": "라벨의 인치를 cm로 바꾼 값입니다. 허리단면은 둘레의 절반으로, 쇼핑몰 실측과 비교할 때 씁니다.",
+             "caption": "1인치 = 2.54cm로 계산해 소수 첫째 자리에서 반올림했습니다.",
+             "head": ["인치", "허리둘레", "허리단면"],
+             "rows": [[str(i), cm(i), half(i)] for i in range(24, 45)], "highlight": 0},
+            {"h2": "허리둘레 cm → 인치",
+             "intro": "줄자로 잰 허리둘레를 인치로 바꾼 값입니다.",
+             "caption": "cm를 2.54로 나눠 소수 첫째 자리에서 반올림했습니다.",
+             "head": ["허리둘레", "인치"],
+             "rows": [[f"{c}cm", inch(c)] for c in range(60, 111)], "highlight": 0},
+            {"h2": "라벨 인치와 실제 허리",
+             "intro": "리바이스 코리아 공식몰 501 오리지널 진의 실측 허리단면을 둘레로 바꿔 라벨 인치와 비교했습니다.",
+             "caption": "리바이스 코리아 공식몰 남성 501 오리지널 진(005010134)·여성 501 오리지널 진(125010384) SIZE INFO 실측. "
+                        "실측 둘레는 허리단면 × 2, 차이는 cm입니다. 측정 방법에 따라 1~2cm 오차가 있을 수 있다는 공식 안내가 있습니다.",
+             "head": ["라벨", "인치 × 2.54", "실측 둘레", "차이"],
+             "rows": [[n, cm(k), f"{num(c)}cm", diff(c - k * 2.54)] for n, k, c in levi], "highlight": 0},
+            {"h2": "평균 허리둘레와 복부비만 기준",
+             "intro": "건강검진에서 잰 허리둘레입니다. 인치는 cm를 2.54로 나눈 값입니다.",
+             "caption": "평균은 국민건강보험공단 2021년 건강검진 자료(YTN 2024-01-02 보도), 복부비만 기준은 국민건강보험공단 "
+                        "건강검진 판정 기준(「2024 건강검진 통계연보」 보도자료)입니다.",
+             "head": ["구분", "허리둘레", "인치"],
+             "rows": [[n, f"{v:.1f}cm", inch(v)] for n, v in WAIST_AVG]
+                     + [[n, f"{v}cm 이상", inch(v)] for n, v in WAIST_OBESE], "highlight": 0},
+        ],
+        "tool": WAIST_TOOL,
+        "script": WAIST_SCRIPT,
+        "body": [
+            ("허리 재는 법",
+             "질병관리청 국가건강정보포털은 양발을 25~30cm 벌리고 서서 숨을 편안히 내쉰 상태에서, 갈비뼈 가장 아래와 "
+             "골반 가장 높은 곳(장골능)의 가운데를 줄자로 재라고 안내합니다. 줄자는 살을 누르지 않을 만큼 느슨하게 둡니다. "
+             "바지를 고를 때는 잘 맞는 바지의 허리단면을 재서 상품 실측과 비교하는 편이 정확합니다."),
+            ("단면은 둘레의 절반",
+             "쇼핑몰 실측의 허리단면은 바지를 평평하게 놓고 잰 한쪽 폭입니다. 2를 곱하면 허리둘레가 되고, 다시 2.54로 나누면 "
+             f"인치입니다. 32인치는 둘레 {cm(32)}, 단면 {half(32)}입니다."),
+            ("라벨 인치와 실측은 1~2cm 다릅니다",
+             f"리바이스 코리아 공식몰 실측으로 남성 501 오리지널 진 32는 허리둘레 {num(m32)}cm라 라벨({cm(32)})보다 "
+             f"{32 * 2.54 - m32:.1f}cm 작고, 여성 501 오리지널 진 28은 {num(w28)}cm라 라벨({cm(28)})보다 {w28 - 28 * 2.54:.1f}cm 큽니다. "
+             "리바이스도 측정 방법에 따라 1~2cm 오차가 있을 수 있다고 안내합니다. 같은 인치라도 상품마다 실측을 확인하세요."),
+            ("한국인 평균 허리둘레",
+             f"국민건강보험공단 2021년 건강검진 기준 평균 허리둘레는 남성 {avg_m:.1f}cm({inch(avg_m)}), 여성 {avg_w:.1f}cm({inch(avg_w)})였고, "
+             "남성은 30대가 86.8cm, 여성은 80세 이상이 82.5cm로 가장 길었습니다(YTN 2024-01-02 보도). "
+             "건강검진은 허리둘레가 남성 90cm, 여성 85cm 이상이면 복부비만으로 판정합니다."),
+        ],
+        "sources": ["1인치 = 2.54cm(국제 인치 정의)",
+                    "리바이스 코리아 공식몰 남성 501 오리지널 진(005010134)·여성 501 오리지널 진(125010384) SIZE INFO 실측",
+                    "국민건강보험공단 2021년 건강검진 평균 허리둘레(YTN 2024-01-02 보도)",
+                    "국민건강보험공단 「2024 건강검진 통계연보」 보도자료(2025-12-30) — 복부비만 판정 기준",
+                    "질병관리청 국가건강정보포털 이달의 건강정보(2022-09) — 허리둘레 측정법"],
+        "faq": [
+            ("허리 32인치는 몇 cm인가요?",
+             f"{cm(32)}입니다(32 × 2.54 = 81.28). 쇼핑몰 실측의 허리단면으로는 {half(32)}입니다."),
+            ("허리둘레 95cm는 몇 인치인가요?",
+             f"{inch(95)}입니다(95 ÷ 2.54). 단면으로는 47.5cm입니다."),
+            ("허리 30인치 단면은 몇 cm인가요?",
+             f"{half(30)}입니다. 둘레 {cm(30)}의 절반입니다. 리바이스 코리아 공식몰의 남성 501 오리지널 진 30 실측 허리단면은 "
+             f"{num(LEVI_501_M_WAIST[30])}cm입니다."),
+            ("바지 82 사이즈는 몇 인치인가요?",
+             f"82가 허리둘레 82cm를 뜻하는 표기라면 2.54로 나눠 약 {inch(82)}입니다. 브랜드 사이즈표에서 숫자가 허리둘레(cm)인지 먼저 확인하세요."),
+            ("한국 여자 평균 허리는 몇 인치인가요?",
+             f"국민건강보험공단 2021년 건강검진 기준 여성 평균 허리둘레는 {avg_w:.1f}cm, 약 {inch(avg_w)}입니다. "
+             f"남성은 {avg_m:.1f}cm(약 {inch(avg_m)})입니다."),
+            ("허리 인치는 어떻게 재나요?",
+             "질병관리청 안내대로 양발을 25~30cm 벌리고 서서 숨을 편안히 내쉰 뒤, 갈비뼈 가장 아래와 골반 가장 높은 곳의 가운데를 "
+             "줄자로 잽니다. 잰 cm를 2.54로 나누면 인치입니다."),
+        ],
+        "related_h2": "함께 보면 좋은 페이지",
+        "related": [("/clothing-size-men/", "남성 의류 사이즈", "95는 M, 하의는 허리 인치"),
+                    ("/pants-size-women/", "여자 바지 사이즈", "26은 허리 66~67cm"),
+                    ("/clothing-size-women/", "여성 의류 사이즈", "55는 키 155·가슴 85에서"),
+                    ("/kids-clothing-size/", "아동 의류 사이즈", "110은 키 110cm"),
+                    ("/", "신발 사이즈 환산표", "mm · US · UK · EU · JP")],
+        "note": "라벨 인치와 실제 허리는 상품마다 다를 수 있으므로, 구매 전 상품 페이지의 실측 허리단면을 확인하시기 바랍니다.",
+    }
+
+
 def half_page():
     """반업 뜻: 평소 270에서 한 칸씩 움직인 값(공식표)과, 반업·반다운이 기준인 모델(MODELS의 offset)."""
     total = len(MODELS)
@@ -1521,6 +1653,13 @@ PATA_PANTS_W = [(24, 62, 24.5, 86, "XXS·00"), (25, 65, 25.5, 89, "0"), (26, 67,
                 (32, 85, 33.5, 109, "L·14"), (33, 90, 35.5, 114, "16"), (34, 95, 37.5, 119, "XL·18")]
 # 리바이스 코리아 공식몰 여성 501 오리지널 진(125010384) SIZE INFO 실측(단면 cm): (호칭, 허리단면, 엉덩이단면, 총장)
 LEVI_501_W = [(24, 31.5, 45, 101), (25, 32.5, 46.5, 101), (26, 33.5, 48, 101), (27, 35, 48.5, 102), (28, 36.5, 49.5, 103)]
+# 리바이스 코리아 공식몰 남성 501 오리지널 진(005010134) SIZE INFO 이미지의 허리단면(cm, 2026-10-04): 호칭 -> 단면.
+# 같은 이미지에 '측정 방법에 따라 1-2cm의 오차가 발생할 수 있으며' 안내가 있다.
+LEVI_501_M_WAIST = {28: 36, 30: 38, 32: 40, 34: 42.5, 36: 45}
+# 국민건강보험공단 2021년 건강검진 평균 허리둘레(YTN 2024-01-02 보도: 남 86.0·여 76.6cm, 남 30대 86.8·여 80세 이상 82.5cm)
+WAIST_AVG = (("남성 평균", 86.0), ("여성 평균", 76.6))
+# 복부비만 판정 기준(국민건강보험공단 「2024 건강검진 통계연보」 보도자료 2025-12-30, 질병관리청 국가건강정보포털): 이상이면 복부비만
+WAIST_OBESE = (("남성 복부비만", 90), ("여성 복부비만", 85))
 # 랄프 로렌 코리아 공식몰 상품 사이즈 표(2026-09-30). 남성 아이코닉 메시 폴로의 '상품 사이즈측정'(옷 치수 cm):
 # (사이즈, 한국, 커스텀 슬림핏 가슴둘레, 클래식핏 가슴둘레) — 커스텀 슬림 658366, 클래식 642904
 RL_MEN = [("XS", 90, 89.0, 96.5), ("S", 95, 96.5, 104.0), ("M", 100, 104.0, 112.0), ("L", 105, 113.0, 120.5),
@@ -2726,6 +2865,7 @@ PAGES += [
         ],
         "related_h2": "함께 보면 좋은 페이지",
         "related": [("/clothing-size-women/", "여성 의류 사이즈", "44·55·66 읽는 법"),
+                    ("/waist-inch/", "허리 인치", "32인치는 81.3cm, 단면 40.6cm"),
                     ("/clothing-size-men/", "남성 의류 사이즈", "허리 인치와 cm"),
                     ("/patagonia-size-chart/", "파타고니아 사이즈표", "레트로-X·다운 스웨터 공식 핏"),
                     ("/bra-size/", "브라 사이즈", "75B는 차이 12.5cm"),
@@ -2865,6 +3005,7 @@ PAGES += [
     wide_page(),
     narrow_page(),
     heel_page(),
+    waist_page(),
     half_page(),
 ]
 
@@ -3046,6 +3187,14 @@ if __name__ == "__main__":
     assert [float(r[1][:-2]) for r in hr] == sorted((v[0] for v in RR_STACK.values()), reverse=True)
     assert "is-text" not in build(hp) and hp["verdict"] == "에어포스 1 31.7mm, 덩크 로우 23.1mm"
     assert "990v6(39.1mm)·574(38.2mm) 다음으로 높고, 9060도 37.3mm" in hp["faq"][3][1]
+    # 허리 인치: 환산값, 리바이스 라벨과 실측 차이, 평균의 인치, 표 폭(문장형 표가 아님), 제목·설명 길이
+    wp = waist_page()
+    t1, t2, t3, t4 = (t["rows"] for t in wp["tables"])
+    assert t1[8] == ["32", "81.3cm", "40.6cm"] and t2[35] == ["95cm", "37.4인치"]
+    assert t3[2] == ["남성 32", "81.3cm", "80cm", "−1.3"] and t3[-1] == ["여성 28", "71.1cm", "73cm", "+1.9"]
+    assert t4[1] == ["여성 평균", "76.6cm", "30.2인치"] and t4[2] == ["남성 복부비만", "90cm 이상", "35.4인치"]
+    assert "is-text" not in build(wp) and len(wp["title"]) <= 60 and len(wp["desc"]) <= 155, (len(wp["title"]), len(wp["desc"]))
+    assert "1.3cm 작고" in wp["body"][2][1] and "1.9cm 큽니다" in wp["body"][2][1]
     assert NIKE_MAP[270] == (9, 10.5, 8, 42.5) and NIKE_MAP[265][3] == NB_MAP[265][3] == 42
     assert all(NIKE_W[mm][0] == NIKE_MAP[mm][1] - 0.5 for mm in range(245, 305, 5))
     assert all(NB_W[mm][0] == NB_MAP[mm][1] - 0.5 for mm in NB_W)
